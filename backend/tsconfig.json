@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2016", // Compile to modern JavaScript
+    "module": "CommonJS", // Use Node.js module system
+    "outDir": "./dist", // Output compiled JS to 'dist' folder
+    "rootDir": "./src", // Source TS files are in 'src'
+    "strict": true, // Enable strict type checking
+    "esModuleInterop": true, // Allow default imports from CommonJS modules
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true, // Prevent case-related bugs
+    "resolveJsonModule": true, // Allow importing JSON files
+    "baseUrl": "./", // Base directory for module resolution
+    "paths": {
+      // Define path aliases for cleaner imports
+      "@logic/*": ["src/logic/*"],
+      "@types/*": ["src/types/*"]
+    }
+  },
+  "include": ["src/**/*"], // Compile all files in 'src'
+  "exclude": ["node_modules"] // Don't compile node_modules
+}
