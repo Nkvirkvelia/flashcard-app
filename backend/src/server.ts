@@ -1,5 +1,3 @@
-// backend/src/server.ts
-
 import express, { Request, Response } from "express";
 import cors from "cors";
 import * as logic from "./logic/algorithm";
@@ -16,7 +14,7 @@ app.use(express.json());
 
 // --- API Routes ---
 
-// GET /api/practice - Get cards to practice for the current day
+// GET /api/practice
 app.get("/api/practice", (req: Request, res: Response) => {
   try {
     const day = state.getCurrentDay();
@@ -33,24 +31,23 @@ app.get("/api/practice", (req: Request, res: Response) => {
   }
 });
 
-// POST /api/update - Update a card's bucket after practice
+// POST /api/update
 app.post("/api/update", (req: Request, res: Response) => {
   try {
     const { cardFront, cardBack, difficulty } = req.body as UpdateRequest;
 
     if (!(difficulty in AnswerDifficulty)) {
-      res.status(400).json({ message: "Invalid difficulty level" });
-      return;
+      return res.status(400).json({ message: "Invalid difficulty level" });
     }
 
     const card = state.findCard(cardFront, cardBack);
     if (!card) {
-      res.status(404).json({ message: "Card not found" });
-      return;
+      return res.status(404).json({ message: "Card not found" });
     }
 
     const currentBuckets = state.getBuckets();
     const previousBucket = state.findCardBucket(card);
+
     const updatedBuckets = logic.update(currentBuckets, card, difficulty);
     state.setBuckets(updatedBuckets);
 
@@ -75,22 +72,20 @@ app.post("/api/update", (req: Request, res: Response) => {
   }
 });
 
-// GET /api/hint - Get a hint for a card
+// GET /api/hint
 app.get("/api/hint", (req: Request, res: Response) => {
   try {
     const { cardFront, cardBack } = req.query;
 
     if (typeof cardFront !== "string" || typeof cardBack !== "string") {
-      res
+      return res
         .status(400)
         .json({ message: "Missing cardFront or cardBack query parameter" });
-      return;
     }
 
     const card = state.findCard(cardFront, cardBack);
     if (!card) {
-      res.status(404).json({ message: "Card not found" });
-      return;
+      return res.status(404).json({ message: "Card not found" });
     }
 
     const hint = logic.getHint(card);
@@ -102,13 +97,12 @@ app.get("/api/hint", (req: Request, res: Response) => {
   }
 });
 
-// GET /api/progress - Get learning progress statistics
+// GET /api/progress
 app.get("/api/progress", (req: Request, res: Response) => {
   try {
     const buckets = state.getBuckets();
     const history = state.getHistory();
     const progress: ProgressStats = logic.computeProgress(buckets, history);
-
     res.json(progress);
   } catch (error) {
     console.error("Error computing progress:", error);
@@ -116,40 +110,40 @@ app.get("/api/progress", (req: Request, res: Response) => {
   }
 });
 
-// POST /api/day/next - Advance the simulation day
+// POST /api/day/next
 app.post("/api/day/next", (req: Request, res: Response) => {
   try {
     state.incrementDay();
     const newDay = state.getCurrentDay();
     console.log(`Advanced to Day ${newDay}`);
-    res
-      .status(200)
-      .json({ message: `Advanced to day ${newDay}`, currentDay: newDay });
+    res.status(200).json({
+      message: `Advanced to day ${newDay}`,
+      currentDay: newDay,
+    });
   } catch (error) {
     console.error("Error advancing day:", error);
     res.status(500).json({ message: "Error advancing day" });
   }
 });
 
-// POST /api/cards - Add a new card from the extension
+// POST /api/cards - Add new card
 app.post("/api/cards", (req: Request, res: Response) => {
   try {
     const { front, back, hint, tags } = req.body;
 
     if (!front || !back) {
-      res.status(400).json({ message: "Front and back are required" });
-      return;
+      return res.status(400).json({ message: "Front and back are required" });
     }
 
     const newCard = new Flashcard(front, back, hint, tags || []);
-    const currentBuckets = state.getBuckets();
 
-    if (!currentBuckets.has(0)) {
-      currentBuckets.set(0, new Set());
+    const buckets = state.getBuckets();
+    if (!buckets.has(0)) {
+      buckets.set(0, new Set());
     }
 
-    currentBuckets.get(0)?.add(newCard);
-    state.setBuckets(currentBuckets);
+    buckets.get(0)!.add(newCard);
+    state.setBuckets(buckets);
 
     console.log(`Added new card: "${front}"`);
     res.status(201).json({
