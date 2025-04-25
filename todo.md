@@ -128,45 +128,45 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 
 ### 3.1: Basic Overlay UI & Styling
 
-- [ ] Modify `practice.html`: Add overlay container `div#gesture-overlay`.
-- [ ] Modify `practice.html`: Add button/span `#gesture-access-button` inside overlay with text "Access Camera".
-- [ ] Modify `practice.css`: Style `#gesture-overlay` (fixed position bottom-right, dimensions, grey background, border-radius, flex centering, initial transparent border).
-- [ ] Modify `practice.css`: Style `#gesture-access-button` (cursor, text style).
+- [ ] Modify **`index.html`**: Add overlay container `div#gesture-overlay`.
+- [ ] Modify **`index.html`**: Add button/span `#gesture-access-button` inside overlay with text "Access Camera".
+- [ ] Modify **your existing CSS file (e.g., `style.css` or `index.css`)**: Style `#gesture-overlay` (fixed position bottom-right, dimensions, grey background, border-radius, flex centering, initial transparent border).
+- [ ] Modify **your existing CSS file**: Style `#gesture-access-button` (cursor, text style).
 
 ### 3.2: Camera Access Logic & UI Update
 
-- [ ] Modify `practice.js`: Get references to `#gesture-overlay`, `#gesture-access-button`.
-- [ ] Modify `practice.js`: Add `click` listener to `#gesture-access-button`.
-- [ ] Modify `practice.js` (listener): Call `navigator.mediaDevices.getUserMedia({ video: true })`.
-- [ ] Modify `practice.js` (`.then`): Log success, potentially hide button text/update overlay style.
-- [ ] Modify `practice.js` (`.catch`): Log error, update `#gesture-access-button` text to "Permission Denied".
-- [ ] Create/Update `practice.test.js`. Mock `getUserMedia`.
+- [ ] Modify **your existing JS file (e.g., `script.js` or `index.js`)**: Get references to `#gesture-overlay`, `#gesture-access-button`.
+- [ ] Modify **your existing JS file**: Add `click` listener to `#gesture-access-button`.
+- [ ] Modify **your existing JS file** (listener): Call `navigator.mediaDevices.getUserMedia({ video: true })`.
+- [ ] Modify **your existing JS file** (`.then`): Log success, potentially hide button text/update overlay style.
+- [ ] Modify **your existing JS file** (`.catch`): Log error, update `#gesture-access-button` text to "Permission Denied".
+- [ ] Create/Update **your frontend test file (e.g., `index.test.js`)**. Mock `getUserMedia`.
 - [ ] **Test:** Grant permission scenario -> success logic runs, UI updates.
 - [ ] **Test:** Deny permission scenario -> error logic runs, button text updates.
 
 ### 3.3: Webcam Feed Display & TFJS/MediaPipe Loading
 
-- [ ] Modify `practice.js` (`getUserMedia.then`): Accept `stream`.
-- [ ] Modify `practice.js`: Create `<video>` element programmatically.
-- [ ] Modify `practice.js`: Set video attributes (`playsinline`, `autoplay`, `muted`) and styles (`width`, `height`, `object-fit`, `transform: scaleX(-1)`).
-- [ ] Modify `practice.js`: Set `video.srcObject = stream`.
-- [ ] Modify `practice.js`: Append video element to `#gesture-overlay`. Hide/remove access button.
-- [ ] Modify `practice.js`: Implement helper function (`loadScript` or dynamic `import()`) for loading external JS.
-- [ ] Modify `practice.js`: Call helper to load TFJS Core, Backend, and Hand Pose Detection _after_ stream setup is complete.
-- [ ] Update `practice.test.js`: Assert `<video>` created, configured, appended on permission grant.
-- [ ] Update `practice.test.js`: Assert ML dependency loading functions are called only on permission grant.
+- [ ] Modify **your existing JS file** (`getUserMedia.then`): Accept `stream`.
+- [ ] Modify **your existing JS file**: Create `<video>` element programmatically.
+- [ ] Modify **your existing JS file**: Set video attributes (`playsinline`, `autoplay`, `muted`) and styles (`width`, `height`, `object-fit`, `transform: scaleX(-1)`).
+- [ ] Modify **your existing JS file**: Set `video.srcObject = stream`.
+- [ ] Modify **your existing JS file**: Append video element to `#gesture-overlay`. Hide/remove access button.
+- [ ] Modify **your existing JS file**: Implement helper function (`loadScript` or dynamic `import()`) for loading external JS.
+- [ ] Modify **your existing JS file**: Call helper to load TFJS Core, Backend, and Hand Pose Detection _after_ stream setup is complete.
+- [ ] Update **your frontend test file**: Assert `<video>` created, configured, appended on permission grant.
+- [ ] Update **your frontend test file**: Assert ML dependency loading functions are called only on permission grant.
 
 ### 3.4: Hand Detection Loop (Basic)
 
-- [ ] Modify `practice.js`: Add module-level variables for `detector`, `videoElement`.
-- [ ] Modify `practice.js`: Implement `initializeDetector` function (await `tf.setBackend`, `tf.ready`, `handPoseDetection.createDetector`). Call after libraries loaded. Handle init errors.
-- [ ] Modify `practice.js`: Implement `detectHandsLoop` function using `requestAnimationFrame`.
-- [ ] Modify `practice.js` (loop): Check if `detector` and `videoElement` (with `readyState`) are ready.
-- [ ] Modify `practice.js` (loop): Call `await detector.estimateHands(videoElement)`. Use `try...catch`.
-- [ ] Modify `practice.js` (loop): `console.log` detected `hands` array if length > 0.
-- [ ] Modify `practice.js` (loop): Call `requestAnimationFrame(detectHandsLoop)` recursively.
-- [ ] Modify `practice.js` (`initializeDetector`): Start loop (`requestAnimationFrame(detectHandsLoop)`) after successful detector init.
-- [ ] Update `practice.test.js`: Mock TF/MediaPipe/detector methods (`setBackend`, `ready`, `createDetector`, `estimateHands`). Mock `requestAnimationFrame`.
+- [ ] Modify **your existing JS file**: Add module-level variables for `detector`, `videoElement`.
+- [ ] Modify **your existing JS file**: Implement `initializeDetector` function (await `tf.setBackend`, `tf.ready`, `handPoseDetection.createDetector`). Call after libraries loaded. Handle init errors.
+- [ ] Modify **your existing JS file**: Implement `detectHandsLoop` function using `requestAnimationFrame`.
+- [ ] Modify **your existing JS file** (loop): Check if `detector` and `videoElement` (with `readyState`) are ready.
+- [ ] Modify **your existing JS file** (loop): Call `await detector.estimateHands(videoElement)`. Use `try...catch`.
+- [ ] Modify **your existing JS file** (loop): `console.log` detected `hands` array if length > 0.
+- [ ] Modify **your existing JS file** (loop): Call `requestAnimationFrame(detectHandsLoop)` recursively.
+- [ ] Modify **your existing JS file** (`initializeDetector`): Start loop (`requestAnimationFrame(detectHandsLoop)`) after successful detector init.
+- [ ] Update **your frontend test file**: Mock TF/MediaPipe/detector methods (`setBackend`, `ready`, `createDetector`, `estimateHands`). Mock `requestAnimationFrame`.
 - [ ] **Test:** `initializeDetector` calls `createDetector` correctly.
 - [ ] **Test:** `detectHandsLoop` calls `estimateHands` within `requestAnimationFrame`.
 - [ ] **Test:** `detectHandsLoop` processes mock hand data result.
@@ -177,29 +177,20 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 - [ ] Implement helper `isThumbsUp(hand)` using landmark geometry.
 - [ ] Implement helper `isFlatHand(hand)` using landmark geometry (palm facing camera, fingers extended).
 - [ ] Implement helper `isThumbsDown(hand)` using landmark geometry.
-- [ ] Implement main `classifyGesture(hands)` function:
-  - [ ] Iterate through `hands`.
-  - [ ] Call helper functions (`isThumbsUp`, etc.).
-  - [ ] Handle multi-hand logic (allow only one _type_ of gesture across hands, return 'ambiguous' if conflicting types detected).
-  - [ ] Return 'easy', 'hard', 'wrong', 'none', or 'ambiguous'.
+- [ ] Implement main `classifyGesture(hands)` function (handle multi-hand logic).
 - [ ] Export `classifyGesture`.
 - [ ] Create `gestureUtils.test.js`.
-- [ ] Write unit tests for `classifyGesture` with mock landmark data for all required cases (single hand gestures, multi-hand same gesture, multi-hand conflicting gestures, neutral/no hands).
+- [ ] Write unit tests for `classifyGesture` with mock landmark data for all required cases.
 
 ### 3.6: Gesture Hold Timer & Border Feedback
 
-- [ ] Modify `practice.js`: Import `classifyGesture`.
-- [ ] Modify `practice.js`: Add state variables (`currentGesture`, `gestureStartTime`, `GESTURE_HOLD_DURATION`, `gestureColors`).
-- [ ] Modify `practice.js` (`detectHandsLoop`): Call `classifyGesture(hands)`.
-- [ ] Modify `practice.js` (loop): Implement state logic:
-  - [ ] If new valid gesture: Set `currentGesture`, reset `gestureStartTime`.
-  - [ ] If same valid gesture: Calculate `holdTime`. Check if `holdTime >= GESTURE_HOLD_DURATION`.
-  - [ ] If no/ambiguous gesture: Reset `currentGesture`, `gestureStartTime`.
-- [ ] Modify `practice.js` (loop): Update `#gesture-overlay` border based on state:
-  - [ ] Implement border "filling" animation (e.g., CSS gradient, pseudo-element animation) based on `holdTime / GESTURE_HOLD_DURATION` and `gestureColors[currentGesture]`.
-  - [ ] Reset border/animation when gesture stops or changes.
-- [ ] Modify `practice.js` (loop): Log "Gesture recognized!" when hold completes (placeholder).
-- [ ] Update `practice.test.js`: Mock `classifyGesture`, `Date.now()`, timers, `rAF`.
+- [ ] Modify **your existing JS file**: Import `classifyGesture` from `gestureUtils.js` (adjust path if needed).
+- [ ] Modify **your existing JS file**: Add state variables (`currentGesture`, `gestureStartTime`, `GESTURE_HOLD_DURATION`, `gestureColors`).
+- [ ] Modify **your existing JS file** (`detectHandsLoop`): Call `classifyGesture(hands)`.
+- [ ] Modify **your existing JS file** (loop): Implement state logic for gesture hold timing.
+- [ ] Modify **your existing JS file** (loop): Implement border "filling" animation on `#gesture-overlay` based on hold progress.
+- [ ] Modify **your existing JS file** (loop): Reset border/animation when gesture stops or changes.
+- [ ] Update **your frontend test file**: Mock `classifyGesture`, `Date.now()`, timers, `rAF`.
 - [ ] **Test:** Hold Start: State updates, border starts filling (mock style assertion).
 - [ ] **Test:** Hold Continue: Border progress updates (mock style assertion).
 - [ ] **Test:** Hold Complete: Recognition log occurs, state reset prepares for action.
@@ -208,17 +199,17 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 
 ### 3.7: Action Triggering, Feedback & Cooldown
 
-- [ ] Modify `practice.js`: Add state variable `isCooldownActive = false`.
-- [ ] Modify `practice.js` (loop): Add `if (isCooldownActive) return;` near the beginning of gesture processing logic.
-- [ ] Modify `practice.js` (loop, on hold complete `holdTime >= GESTURE_HOLD_DURATION`):
+- [ ] Modify **your existing JS file**: Add state variable `isCooldownActive = false`.
+- [ ] Modify **your existing JS file** (loop): Add `if (isCooldownActive) return;` near the beginning of gesture processing logic.
+- [ ] Modify **your existing JS file** (loop, on hold complete):
   - [ ] Check `!isCooldownActive`.
-  - [ ] Call corresponding action function (`handleEasy()`, `handleHard()`, `handleWrong()`). Use `try...catch`. Ensure functions exist/are imported.
+  - [ ] Call corresponding action function (`handleEasy()`, `handleHard()`, `handleWrong()`). Use `try...catch`. Ensure functions exist/are imported/available in the scope of **your existing JS file**.
   - [ ] Set overlay border to solid color (`gestureColors[recognizedAction]`) immediately.
   - [ ] Use 0.5s `setTimeout` to reset border to transparent (if state allows).
   - [ ] Set `isCooldownActive = true`.
   - [ ] Use 1s `setTimeout` to set `isCooldownActive = false`.
   - [ ] Reset `currentGesture`, `gestureStartTime` state _after_ triggering action.
-- [ ] Update `practice.test.js`: Mock action handlers (`handleEasy`, etc.), mock timers.
+- [ ] Update **your frontend test file**: Mock action handlers (`handleEasy`, etc.), mock timers.
 - [ ] **Test:** Correct action handler called on hold complete.
 - [ ] **Test:** Solid border feedback applied for 0.5s then reset.
 - [ ] **Test:** Cooldown state (`isCooldownActive`) managed correctly by timers.
