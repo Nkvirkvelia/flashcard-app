@@ -3,7 +3,7 @@ import { Flashcard } from "../types";
 import { fetchHint } from "../services/api";
 
 interface FlashcardDisplayProps {
-  card: Flashcard;
+  card?: Flashcard; // Made optional to avoid runtime crash
   showBack: boolean;
 }
 
@@ -15,11 +15,15 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
   const [loadingHint, setLoadingHint] = useState<boolean>(false);
   const [hintError, setHintError] = useState<string | null>(null);
 
-  // Function to fetch the hint when the "Get Hint" button is clicked
+  // Prevent rendering if card is not yet available
+  if (!card) {
+    return <div>Loading card...</div>;
+  }
+
   const handleGetHint = async () => {
     setLoadingHint(true);
     setHintError(null);
-    setHint(null); // Clear any previous hint
+    setHint(null);
 
     try {
       const fetchedHint = await fetchHint(card);
@@ -41,13 +45,9 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
         borderRadius: "8px",
       }}
     >
-      {/* Display front of card */}
       <h3>{card.front}</h3>
-
-      {/* Conditionally display the back of the card or "???" */}
       <p>{showBack ? card.back : "???"}</p>
 
-      {/* Conditionally show "Get Hint" button */}
       {!showBack && (
         <div>
           <button
@@ -58,7 +58,6 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
             {loadingHint ? "Loading..." : "Get Hint"}
           </button>
 
-          {/* Display hint or error message */}
           {hint && (
             <p>
               <strong>Hint:</strong> {hint}
