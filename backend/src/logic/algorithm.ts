@@ -9,6 +9,7 @@
  */
 
 import { Flashcard, AnswerDifficulty, BucketMap } from "./flashcards";
+import { PracticeRecord, ProgressStats } from "../types";
 
 /**
  * Transforms a BucketMap into an array representation where each index corresponds to a bucket.
@@ -203,19 +204,6 @@ export function getHint(card: Flashcard): string {
  * @returns statistics about learning progress.
  * @spec.requires [SPEC TO BE DEFINED]
  */
-type PracticeRecord = {
-  card: Flashcard;
-  isCorrect: boolean;
-  difficulty: AnswerDifficulty;
-  timestamp: number;
-};
-
-type ProgressStats = {
-  totalCards: number;
-  cardsInBuckets: Record<number, number>;
-  successRate: number;
-};
-
 export function computeProgress(
   buckets: BucketMap,
   history: PracticeRecord[]

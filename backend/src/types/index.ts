@@ -28,6 +28,8 @@ export interface PracticeRecord {
   difficulty: AnswerDifficulty;
   previousBucket: number;
   newBucket: number;
+  card: Flashcard;
+  isCorrect: boolean;
 }
 
 // Learning progress stats returned by computeProgress
