@@ -1,0 +1,17 @@
+/* Floating button styles */
+.floating-flashcard-button {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.floating-flashcard-button:hover {
+  background-color: #0056b3;
+}
+
+/* Modal styles */
+.flashcard-modal textarea {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
