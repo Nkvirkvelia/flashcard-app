@@ -1,4 +1,4 @@
-import { Flashcard, BucketMap, AnswerDifficulty } from "@logic/flashcards";
+import { Flashcard, BucketMap, AnswerDifficulty } from "./logic/flashcards";
 import { PracticeRecord } from "./types/index";
 
 // --- Initial Cards ---
