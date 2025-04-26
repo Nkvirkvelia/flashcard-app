@@ -205,7 +205,7 @@ app.get("/api/tags", (req: Request, res: Response) => {
 
     for (const cardSet of buckets.values()) {
       for (const card of cardSet) {
-        card.tags.forEach(tag => allTags.add(tag));
+        card.tags.forEach((tag) => allTags.add(tag));
       }
     }
 
@@ -221,3 +221,13 @@ app.listen(PORT, () => {
   console.log(`Backend server running at http://localhost:${PORT}`);
   console.log(`Current Day: ${state.getCurrentDay()}`);
 });
+
+export { app };
+
+// Only start the server if this file is run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Backend server running at http://localhost:${PORT}`);
+    console.log(`Current Day: ${state.getCurrentDay()}`);
+  });
+}
