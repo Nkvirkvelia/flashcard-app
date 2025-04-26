@@ -129,12 +129,15 @@ app.get("/api/progress", (req: Request, res: Response) => {
 
 // POST /api/day/next - Advance the simulation day
 app.post("/api/day/next", (req: Request, res: Response) => {
-  state.incrementDay();
-  const newDay = state.getCurrentDay();
-  console.log(`Advanced to Day ${newDay}`);
-  res
-    .status(200)
-    .json({ message: `Advanced to day ${newDay}`, currentDay: newDay });
+  try {
+    state.incrementDay(); // Increment the day in the backend state
+    const newDay = state.getCurrentDay(); // Get the updated day
+    console.log(`Advanced to Day ${newDay}`);
+    res.status(200).json({ currentDay: newDay }); // Return the updated day
+  } catch (error) {
+    console.error("Error advancing to the next day:", error);
+    res.status(500).json({ message: "Error advancing to the next day" });
+  }
 });
 
 // POST /api/cards - Add a new card from the extension

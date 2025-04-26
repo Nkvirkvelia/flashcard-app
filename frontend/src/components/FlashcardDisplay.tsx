@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Flashcard } from "../types";
 import { fetchHint } from "../services/api";
 
@@ -15,10 +15,12 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
   const [loadingHint, setLoadingHint] = useState<boolean>(false);
   const [hintError, setHintError] = useState<string | null>(null);
 
-  // Prevent rendering if card is not yet available
-  if (!card) {
-    return <div>Loading card...</div>;
-  }
+  // Reset hint state whenever the card changes
+  useEffect(() => {
+    setHint(null);
+    setHintError(null);
+    setLoadingHint(false);
+  }, [card]);
 
   const handleGetHint = async () => {
     setLoadingHint(true);
@@ -26,7 +28,7 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
     setHint(null);
 
     try {
-      const fetchedHint = await fetchHint(card);
+      const fetchedHint = await fetchHint(card!); // `card` is guaranteed to exist here
       setHint(fetchedHint);
     } catch (error) {
       setHintError("Failed to load hint. Please try again.");
@@ -34,6 +36,11 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
       setLoadingHint(false);
     }
   };
+
+  // Prevent rendering if card is not yet available
+  if (!card) {
+    return <div>Loading card...</div>;
+  }
 
   return (
     <div
