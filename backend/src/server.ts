@@ -4,6 +4,7 @@ import * as logic from "./logic/algorithm";
 import { Flashcard, AnswerDifficulty } from "./logic/flashcards";
 import * as state from "./state";
 import { UpdateRequest, ProgressStats, PracticeRecord } from "./types";
+const { processTags } = require("./utils/processTags");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -151,8 +152,17 @@ app.post("/api/cards", (req: Request, res: Response) => {
       return;
     }
 
+    // Validate tags field
+    if (tags && typeof tags !== "string" && !Array.isArray(tags)) {
+      res.status(400).json({ message: "Tags must be a string or an array" });
+      return;
+    }
+
+    // Process tags using processTags
+    const processedTags = processTags(tags);
+
     // Create new flashcard
-    const newCard = new Flashcard(front, back, hint, tags || []);
+    const newCard = new Flashcard(front, back, hint, processedTags);
 
     // Get current buckets
     const currentBuckets = state.getBuckets();
@@ -173,7 +183,7 @@ app.post("/api/cards", (req: Request, res: Response) => {
     console.log(`Added new card: "${front}"`);
     res.status(201).json({
       message: "Card added successfully",
-      card: { front, back, hint, tags },
+      card: { front, back, hint, tags: processedTags },
     });
   } catch (error) {
     console.error("Error adding card:", error);

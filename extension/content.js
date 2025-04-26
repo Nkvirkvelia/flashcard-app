@@ -184,11 +184,11 @@ function openModal(selectedText) {
     const cardData = {
       front: frontInput.value.trim(),
       back: backTextArea.value.trim(),
-      hint: hintInput.value.trim() || undefined, // Omit if empty
+      hint: hintInput.value.trim() || undefined,
       tags: tagsInput.value
         .split(",")
         .map((tag) => tag.trim())
-        .filter((tag) => tag), // Process tags
+        .filter((tag) => tag), // Process tags into an array
     };
 
     try {
