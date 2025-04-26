@@ -41,33 +41,35 @@ Okay, let's create a detailed blueprint and break it down into iterative, test-d
 
 **Phase 3: Webcam Gesture Recognition Development**
 
-1.  **Step 3.1: Basic Overlay UI & Styling**
-    - **Goal:** Add the initial grey overlay element to the practice page.
-    - **Tasks:** Modify the practice page's HTML to include a `div` for the overlay (bottom-right corner). Add CSS for positioning, rounded corners, grey background, and initial text ("Access Camera"). Test the overlay appears correctly on page load.
-2.  **Step 3.2: Camera Access Logic & UI Update**
-    - **Goal:** Implement the camera permission request flow.
-    - **Tasks:** Add JavaScript to the practice page. Add a click listener to the "Access Camera" element. On click, call `navigator.mediaDevices.getUserMedia({video: true})`. Handle the promise: on success, add a class/style to the overlay to indicate success (e.g., prepare for video feed) and potentially hide the button text; on failure, update the overlay text to "Permission Denied" but keep the button clickable. Write tests (mocking `getUserMedia`) to verify the UI updates correctly for both grant and deny scenarios.
-3.  **Step 3.3: Webcam Feed Display & TFJS/MediaPipe Loading**
-    - **Goal:** Show the webcam feed and load necessary libraries only after permission is granted.
-    - **Tasks:** Modify the success handler from Step 3.2: Create a `<video>` element inside the overlay; set its `srcObject` to the stream from `getUserMedia`. Implement dynamic loading for TensorFlow.js (`@tensorflow/tfjs`) and MediaPipe Hands (`@tensorflow-models/hand-pose-detection`). Trigger loading _only_ after permission is granted. Test that the video element is added and `srcObject` is set. Test (e.g., by checking script tags or mocking load functions) that TFJS/MediaPipe loading is initiated _only_ after simulated permission grant. Add TFJS/MediaPipe types (`@types/tensorflow__tfjs`, potentially others) if using TypeScript.
-4.  **Step 3.4: Hand Detection Loop (Basic)**
-    - **Goal:** Set up the core loop to detect hands using MediaPipe.
-    - **Tasks:** Initialize the MediaPipe Hands detector (`createDetector`). Set up a loop (e.g., using `requestAnimationFrame`) to get predictions from the video feed (`detector.estimateHands`). For now, just log detected hand landmarks to the console. Write tests (mocking the detector and `estimateHands`) to ensure the detection loop runs and processes mock hand data.
+## Revised Development Blueprint & Iterative Plan (Phase 3 - React/TS)
+
+**Strategy:** Test-Driven Development (TDD) using React Testing Library. Build incrementally within the React component structure.
+
+**Target Files:** Primarily `frontend/src/components/PracticeView.tsx` (or a new child component like `GestureOverlay.tsx`), `frontend/src/index.css` (or other relevant CSS files), `frontend/src/utils/gestureUtils.ts`, and associated test files.
+
+**Phase 3: Webcam Gesture Recognition Development (React/TS)**
+
+1.  **Step 3.1: Basic Overlay UI Component & Styling**
+    - **Goal:** Add the initial static UI element for the webcam overlay using JSX within the appropriate React component.
+    - **Tasks:** Modify `PracticeView.tsx` (or create `GestureOverlay.tsx` and use it in `PracticeView.tsx`) to conditionally render a `div` (`#gesture-overlay`) containing the "Access Camera" button (`#gesture-access-button`). Add necessary CSS rules to `index.css` or component-specific styles. Write RTL test to assert the overlay renders initially with the button.
+2.  **Step 3.2: Camera Access Logic & State**
+    - **Goal:** Implement the camera permission request flow using React state and event handlers.
+    - **Tasks:** Add state (`useState`) to track permission status (`'idle'`, `'pending'`, `'granted'`, `'denied'`). Add an `onClick` handler to the "Access Camera" button. This handler sets state to `'pending'` and calls `navigator.mediaDevices.getUserMedia`. Update state in `.then()`/`.catch()` callbacks. Use `useEffect` to react to permission state changes (e.g., logging). Write RTL tests mocking `getUserMedia`, simulating clicks, and asserting state changes and UI updates (button text).
+3.  **Step 3.3: Webcam Feed Display & TFJS/MediaPipe Loading Hook**
+    - **Goal:** Show the webcam feed in a `<video>` element and load ML libraries dynamically _after_ permission grant, managed by component logic/hooks.
+    - **Tasks:** Use `useRef` for the `<video>` element. Conditionally render the `<video>` element in JSX when permission is `'granted'`. Use `useEffect` (dependent on permission state and the stream object) to set the `video.srcObject`. Implement dynamic script loading (e.g., in a utility or hook). Trigger loading via `useEffect` when permission is granted. Manage ML loading state (`useState`). Write RTL tests asserting video rendering, `srcObject` setting (via ref), and mock script loading calls triggered correctly.
+4.  **Step 3.4: Hand Detection Hook & Loop Setup**
+    - **Goal:** Encapsulate MediaPipe setup and the detection loop, possibly within a custom hook (`useHandDetection`).
+    - **Tasks:** Create a custom hook or manage within `PracticeView.tsx`'s `useEffect`. Use `useRef` for the detector instance. Use `useEffect` (dependent on ML libs loaded state) to initialize the detector (`createDetector`). Use another `useEffect` (dependent on detector & video element) to start the `requestAnimationFrame` loop, storing the frame ID in `useRef` for cleanup. The loop function (called by `rAF`) calls `detector.estimateHands`. Use `useEffect` cleanup to cancel `rAF` and dispose the detector. Write RTL tests mocking detector methods and `rAF`, ensuring the loop starts and `estimateHands` is called.
 5.  **Step 3.5: Gesture Classification Logic & Tests**
-    - **Goal:** Implement functions to classify detected hand landmarks into specific gestures (Thumbs Up, Thumbs Down, Flat Hand, None/Other).
-    - **Tasks:** Create pure functions (ideally) that take hand landmark data (from MediaPipe) as input. Implement the geometric logic to determine if the landmarks represent Thumbs Up, Thumbs Down, or Flat Hand. Return an identifier for the recognized gesture (e.g., 'easy', 'hard', 'wrong', 'none'). Write unit tests for these classifier functions, providing mock landmark data for each gesture case and verifying the correct identifier is returned. Consider edge cases and multi-hand scenarios based on the spec (allow one gesture type across hands).
-6.  **Step 3.6: Gesture Hold Timer & Border Feedback**
-    - **Goal:** Implement the 3-second hold requirement and visual feedback.
-    - **Tasks:** In the detection loop, call the classifier function (from Step 3.5). Implement state management to track the currently detected gesture, the start time of the hold, and the timer status. If a valid gesture is consistently detected, update a timer. If the timer reaches 3 seconds, trigger a 'gesture recognized' event/state. Add logic to update the overlay border's style (e.g., using CSS variables or direct style manipulation) based on the currently held gesture and the timer progress (filling effect). Implement the immediate reset logic if the gesture changes or stops. Write tests (mocking timers and classifiers) to verify timer start/progress/reset logic and the associated border style updates.
-7.  **Step 3.7: Action Triggering, Feedback & Cooldown**
-    - **Goal:** Link successful gestures to flashcard actions and implement cooldown.
-    - **Tasks:** When the 'gesture recognized' state is reached (after 3s hold):
-      - Trigger the corresponding frontend action (e.g., call the existing JS function that handles 'Easy', 'Hard', or 'Wrong' button clicks).
-      - Briefly apply the solid border feedback (0.5s).
-      - Immediately start a 1-second cooldown timer, disabling gesture processing during this time.
-      - Reset the hold timer/state.
-      - After the cooldown, re-enable gesture processing.
-    - Write tests (mocking action functions, timers) to verify the correct action function is called, the solid border feedback occurs, the cooldown period is enforced, and processing resumes afterward.
+    - **Goal:** Implement the pure gesture classification logic.
+    - **Tasks:** Create `frontend/src/utils/gestureUtils.ts`. Implement/export `isThumbsUp`, `isFlatHand`, `isThumbsDown`, and `classifyGesture`. Write unit tests using Jest in `gestureUtils.test.ts`. (This step is identical to the previous plan, just ensuring TS usage).
+6.  **Step 3.6: Gesture State Management & Border Feedback Hook**
+    - **Goal:** Manage gesture hold state and visual feedback using React state and effects.
+    - **Tasks:** Use `useState` for `currentGesture`, `gestureStartTime`. Integrate `classifyGesture` into the detection loop callback. Update state based on classification results. Use state to derive border style/class names applied to the overlay `div` in JSX (for filling animation). Write RTL tests mocking classifiers/timers, asserting state transitions and className/style changes on the overlay element.
+7.  **Step 3.7: Action Triggering, Props & Cooldown Hook**
+    - **Goal:** Trigger actions via props and implement cooldown state.
+    - **Tasks:** Define props for the gesture component/hook (e.g., `onGestureRecognized: (action: 'easy' | 'hard' | 'wrong') => void`). Call this prop function when a gesture hold completes. Use `useState` for `isCooldownActive`. Implement `setTimeout` logic for feedback (solid border style/class) and cooldown period within `useEffect` or triggered logic, ensuring cleanup. Pause gesture processing during cooldown. Write RTL tests mocking prop functions and timers, asserting props are called correctly, cooldown state works, and feedback styles are applied/removed.
 
 **Phase 4: Integration & Final Testing**
 
@@ -443,436 +445,285 @@ Okay, let's continue with the prompts for the Webcam Gesture Recognition feature
 
 ---
 
-**Prompt 10: Basic Overlay UI & Styling (Gesture Recognition)**
+## Revised LLM Prompts (Phase 3 - React/TS)
 
-```text
-Objective: Add the initial, static UI element for the webcam overlay to the flashcard practice page.
+**Prompt 10 (React): Basic Overlay UI Component & Styling**
 
-Context: This is the first step for the gesture recognition feature. We need to add a non-functional placeholder element to the practice page. Assume you have an existing `practice.html` file and a corresponding `practice.css` file for the flashcard practice view.
+````text
+Objective: Add the initial static UI element for the webcam overlay using React JSX and manage its basic visibility.
+
+Context: We are working within a React/TypeScript frontend (`frontend/src`). The main practice UI is likely rendered by `components/PracticeView.tsx`. We need to add the gesture overlay UI.
 
 Requirements:
-1.  Modify `practice.html`:
-    *   Add a new `div` element inside the `<body>` (or appropriate container).
-    *   Give it an ID (e.g., `gesture-overlay`).
-    *   Inside this div, add another element (e.g., a `span` or `button` with ID `gesture-access-button`) containing the initial text "Access Camera".
-2.  Modify `practice.css`:
-    *   Style the `#gesture-overlay` div:
-        *   `position: fixed;`
-        *   `bottom: 20px;`
-        *   `right: 20px;`
-        *   `width: 150px;` (adjust as needed)
-        *   `height: 112px;` (adjust for 4:3 aspect ratio, or as needed)
-        *   `background-color: #cccccc;` (grey)
-        *   `border-radius: 10px;`
-        *   `display: flex;`
-        *   `justify-content: center;`
-        *   `align-items: center;`
-        *   `z-index: 1000;`
-        *   `overflow: hidden;` /* Important for later border/video */
-        *   `border: 3px solid transparent;` /* For later color feedback */
-    *   Style the `#gesture-access-button` element:
-        *   Make it look clickable (e.g., `cursor: pointer;`, padding, maybe subtle background/border).
-        *   Style the text (color, font size).
+1.  Modify `components/PracticeView.tsx`:
+    *   Introduce a state variable to control the overall visibility of the gesture feature, e.g., `const [showGestureUI, setShowGestureUI] = useState(true);` (or false, depending on default).
+    *   In the JSX return statement, conditionally render the overlay based on `showGestureUI`:
+        ```jsx
+        {showGestureUI && (
+          <div id="gesture-overlay" className="gesture-overlay-base"> {/* Use className for styling */}
+            <button id="gesture-access-button" className="gesture-button-base">
+              Access Camera
+            </button>
+          </div>
+        )}
+        ```
+2.  Modify `index.css` (or relevant CSS file, e.g., `PracticeView.module.css`):
+    *   Define base styles for `.gesture-overlay-base` (fixed position bottom-right, dimensions, initial grey background, border-radius, flex centering, initial transparent border).
+    *   Define base styles for `.gesture-button-base` (cursor, text style).
+3.  Create/Update test file for `PracticeView.tsx`:
+    *   Use React Testing Library (`render`, `screen`).
+    *   Test Case 1: When state shows UI, assert that the element with `id="gesture-overlay"` and the button with text "Access Camera" are present in the rendered output (`screen.getByRole`, `screen.getByText`).
+    *   Test Case 2: (Optional) When state hides UI, assert the overlay is not present (`screen.queryBy...`).
 
-Provide the updated HTML snippet for `practice.html` showing the added div, and the new CSS rules for `practice.css`.
-```
+Provide the updated JSX snippet for `PracticeView.tsx` and the new CSS rules. Also, provide the basic RTL test setup and cases.
+````
 
 ---
 
-**Prompt 11: Camera Access Logic & UI Update**
+**Prompt 11 (React): Camera Access Logic & State**
 
 ```text
-Objective: Implement the logic to request camera access when the overlay button is clicked and update the UI based on permission status.
+Objective: Implement the camera permission request flow using React state (`useState`) and event handlers within the `PracticeView` component.
 
-Context: Building on Prompt 10. The static overlay exists. Now, make the "Access Camera" button functional. Assume you have a `practice.js` file linked to `practice.html`.
+Context: Building on Prompt 10 (React). The static overlay exists in `PracticeView.tsx`. Now, make the "Access Camera" button functional using React state.
 
 Requirements:
-1.  Modify `practice.js`:
-    *   Get references to the `#gesture-overlay` and `#gesture-access-button` elements.
-    *   Add a 'click' event listener to `#gesture-access-button`.
-    *   Inside the listener:
+1.  Modify `components/PracticeView.tsx`:
+    *   Add state for permission status: `const [permissionStatus, setPermissionStatus] = useState<'idle' | 'pending' | 'granted' | 'denied'>('idle');`
+    *   Add state for the button text: `const [buttonText, setButtonText] = useState('Access Camera');`
+    *   Create the `handleAccessCameraClick` async function:
+        *   Set `setPermissionStatus('pending')`.
         *   Call `navigator.mediaDevices.getUserMedia({ video: true })`.
-        *   Use `.then()` for the success case:
-            *   Log success: `console.log("Camera access granted")`.
-            *   Get the overlay element (`#gesture-overlay`).
-            *   Maybe hide the access button (`#gesture-access-button.style.display = 'none';`) or change its text.
-            *   (Prepare for video feed - we'll add the video element in the next step).
-        *   Use `.catch()` for the error/denial case:
-            *   Log the error: `console.error("Camera access denied:", error)`.
-            *   Get the access button element (`#gesture-access-button`).
-            *   Update its text content to "Permission Denied".
-            *   Ensure the button remains clickable to allow retrying.
-2.  Create `practice.test.js` (or add to it):
+        *   In `.then(stream => { ... })`: Set `setPermissionStatus('granted')`; handle the stream (next step); maybe update button text or hide button.
+        *   In `.catch(error => { ... })`: Set `setPermissionStatus('denied')`; `setButtonText('Permission Denied')`; log error.
+    *   Attach this handler to the "Access Camera" button's `onClick` prop in the JSX.
+    *   Conditionally render the button text using the `buttonText` state. Disable the button while `permissionStatus === 'pending'`.
+2.  Update test file for `PracticeView.tsx`:
     *   Mock `navigator.mediaDevices.getUserMedia`.
-    *   Test Case 1 (Grant): Simulate `getUserMedia` resolving successfully. Trigger a click on the mock access button. Assert that the success path logic runs (e.g., check console log mock, check button text/style change).
-    *   Test Case 2 (Deny): Simulate `getUserMedia` rejecting. Trigger a click on the mock access button. Assert that the error path logic runs (e.g., check console error mock, check button text changes to "Permission Denied").
+    *   Test Case (Grant): `render(<PracticeView />);` Simulate `fireEvent.click` on the "Access Camera" button. Make `getUserMedia` mock resolve. Assert `screen.getBy...` reflects state changes (e.g., button text changes or disappears) and internal state (if exposed via test hook/prop) is `'granted'`.
+    *   Test Case (Deny): Simulate click. Make `getUserMedia` mock reject. Assert button text changes to "Permission Denied" (`screen.getByText`). Assert internal state is `'denied'`.
 
-Provide the updated `practice.js` and the new/updated test file `practice.test.js`.
+Provide the updated state variables, the `handleAccessCameraClick` function, the updated JSX for the overlay, and the updated RTL test cases.
 ```
 
 ---
 
-**Prompt 12: Webcam Feed Display & TFJS/MediaPipe Loading**
+**Prompt 12 (React): Webcam Feed Display & TFJS/MediaPipe Loading Hook**
 
 ````text
-Objective: Display the live webcam feed in the overlay upon permission grant and dynamically load TensorFlow.js and MediaPipe libraries.
+Objective: Display the live webcam feed in a `<video>` element upon permission grant and dynamically load ML libraries, managed within the React component lifecycle.
 
-Context: Building on Prompt 11. Camera access is requested. On success, we need to show the video and load the ML models.
-
-Requirements:
-1.  Modify `practice.js`:
-    *   In the `getUserMedia` success (`.then()`) handler:
-        *   Accept the `stream` argument.
-        *   Create a `<video>` element programmatically (e.g., `const videoElement = document.createElement('video');`).
-        *   Set necessary attributes: `videoElement.setAttribute('playsinline', '');`, `videoElement.setAttribute('autoplay', '');`, `videoElement.muted = true;` (important).
-        *   Style the video element: `width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);` (flip horizontally for intuitive mirroring).
-        *   Set the video source: `videoElement.srcObject = stream;`.
-        *   Get the overlay element (`#gesture-overlay`) and append the `videoElement` to it. Make sure the "Access Camera" button is hidden or removed.
-        *   **Dynamic Loading:** Implement functions to dynamically load scripts. Example:
-            ```javascript
-            function loadScript(url) {
-              return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = url;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-              });
-            }
-
-            async function loadMLDependencies() {
-              console.log('Loading TFJS and MediaPipe...');
-              // Replace with actual CDN or local paths
-              await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core');
-              await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl'); // Or other backend
-              await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection');
-              console.log('ML Dependencies loaded.');
-              // TODO: Initialize detector (next step)
-            }
-            ```
-        *   Call `loadMLDependencies()` *after* successfully setting up the video stream.
-2.  Update `practice.test.js`:
-    *   Refine the 'Grant' test case:
-        *   Mock the `stream` object.
-        *   Assert that a `<video>` element is created and appended to the mock overlay.
-        *   Assert that `videoElement.srcObject` is set to the mock stream.
-        *   Mock the `loadScript` function (or the dynamic import mechanism used). Assert that the loading functions for TFJS Core, Backend, and Hand Pose Detection are called *only* in the success path of `getUserMedia`.
-
-Provide the updated `practice.js` and `practice.test.js`. Include the helper `loadScript` function or alternative dynamic loading approach.
-````
-
----
-
-**Prompt 13: Hand Detection Loop (Basic)**
-
-````text
-Objective: Initialize the MediaPipe Hand Pose Detector and set up a loop to continuously detect hands from the video feed.
-
-Context: Building on Prompt 12. The video feed is active, and TFJS/MediaPipe libraries are loaded on demand. Now, use them to start detecting hands.
+Context: Building on Prompt 11 (React). Camera access state is managed. On success (`'granted'`), show video and load libs.
 
 Requirements:
-1.  Modify `practice.js`:
-    *   Add variables to hold the detector instance and the video element reference (set these when available).
-    *   In the `loadMLDependencies` function (or after it resolves), initialize the Hand Pose Detector:
-        ```javascript
-        const model = handPoseDetection.SupportedModels.MediaPipeHands;
-        const detectorConfig = {
-          runtime: 'tfjs', // or 'mediapipe'
-          modelType: 'lite', // or 'full'
-          maxHands: 2 // Or as needed
-        };
-        let detector = null; // Make detector accessible in broader scope
-
-        async function initializeDetector() {
-            try {
-                await tf.setBackend('webgl'); // Or other backend
-                await tf.ready();
-                detector = await handPoseDetection.createDetector(model, detectorConfig);
-                console.log('Hand detector initialized.');
-                // Start the detection loop
-                requestAnimationFrame(detectHandsLoop);
-            } catch (error) {
-                console.error("Error initializing detector:", error);
-                // Update UI to show error
-            }
-        }
-
-        // Call initializeDetector() after ML dependencies are loaded in loadMLDependencies
-        ```
-    *   Create the detection loop function `detectHandsLoop`:
-        ```javascript
-        async function detectHandsLoop() {
-          if (detector && videoElement && videoElement.readyState >= 2) { // Check video readyState
-            try {
-              const hands = await detector.estimateHands(videoElement, {
-                flipHorizontal: false // Already flipped video CSS
-              });
-
-              if (hands.length > 0) {
-                // TODO: Classify gestures (next step)
-                console.log('Detected hands:', hands);
-              } else {
-                // Handle no hands detected state if needed
-              }
-
-            } catch (error) {
-              console.error("Error detecting hands:", error);
-              detector.dispose(); // Dispose on error? Or try again?
-              detector = null;
-              // Maybe show error in UI and stop loop
-            }
+1.  Modify `components/PracticeView.tsx`:
+    *   Add state for the media stream: `const [stream, setStream] = useState<MediaStream | null>(null);`
+    *   Add state for ML loading: `const [mlStatus, setMlStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');`
+    *   Use `useRef` for the video element: `const videoRef = useRef<HTMLVideoElement>(null);`
+    *   In the `handleAccessCameraClick` success (`.then(stream => ...)`): Call `setStream(stream)`. Trigger ML loading (call a function defined below).
+    *   Add a `useEffect` hook that depends on `stream`:
+        ```typescript
+        useEffect(() => {
+          if (stream && videoRef.current) {
+            videoRef.current.srcObject = stream;
           }
-          // Keep looping
-          requestAnimationFrame(detectHandsLoop);
-        }
+          // Cleanup function to stop the stream tracks when component unmounts or stream changes
+          return () => {
+            stream?.getTracks().forEach(track => track.stop());
+          };
+        }, [stream]);
         ```
-    *   Ensure `initializeDetector` is called at the appropriate time (after libraries load). Ensure `videoElement` is accessible to the loop function.
-2.  Update `practice.test.js`:
-    *   Mock `@tensorflow/tfjs`, `@tensorflow-models/hand-pose-detection`, `createDetector`, and `estimateHands`.
-    *   Test Case: After simulating library load and detector initialization, mock `requestAnimationFrame`. Assert that `detector.estimateHands` is called within the mocked animation frame callback. Provide mock hand data as the return value for `estimateHands` and assert that the `console.log('Detected hands:')` part is reached.
+    *   Implement dynamic loading (e.g., a `loadMLDependencies` async function similar to Prompt 12 vanilla JS version using `loadScript` helper or dynamic `import()`). Call this function after setting the stream. Update `mlStatus` state accordingly (`'loading'`, `'ready'`, `'error'`).
+    *   In the JSX:
+        *   Conditionally render the `<video>` element only when `permissionStatus === 'granted'`.
+        *   Assign the `ref`: `<video ref={videoRef} ... />`. Include `autoPlay playsInline muted` attributes and necessary styles (width, height, transform scaleX).
+        *   Hide the "Access Camera" button when permission is granted or pending.
+        *   Optionally display ML loading status (`mlStatus`).
+2.  Update test file for `PracticeView.tsx`:
+    *   Mock `stream` object. Mock dynamic loading functions.
+    *   Refine 'Grant' test: Assert `<video>` element appears (`screen.getByTestId('webcam-video')` - add `data-testid`). Assert (via ref spy or effect mock) that `srcObject` is set. Assert ML loading function is called. Assert `mlStatus` state updates.
 
-Provide the updated `practice.js` and `practice.test.js`.
+Provide the updated state, refs, `useEffect` hooks, dynamic loading function structure, updated JSX, and updated RTL test cases.
 ````
 
 ---
 
-**Prompt 14: Gesture Classification Logic & Tests**
+**Prompt 13 (React): Hand Detection Hook & Loop Setup**
 
 ````text
-Objective: Implement and test functions to classify detected hand landmarks into "Easy" (Thumbs Up), "Hard" (Flat Hand), or "Wrong" (Thumbs Down).
+Objective: Initialize the MediaPipe Hand Pose Detector and set up the detection loop using React hooks (`useRef`, `useEffect`) after ML libraries are loaded.
 
-Context: Building on Prompt 13. The detection loop provides hand landmark data. Now, interpret these landmarks. This logic should be isolated for testability.
+Context: Building on Prompt 12 (React). Video feed is active, ML libs load status (`mlStatus`) is tracked. Now initialize and run the detector. Consider creating a custom hook `useHandDetection` later, but implement inline first.
 
 Requirements:
-1.  Create `gestureUtils.js` (or add to an existing utils file):
-    *   Define and export classifier functions. Example structure:
-        ```javascript
-        // Simplified landmark indices (adjust based on MediaPipeHands model output)
-        const Landmark = { THUMB_TIP: 4, INDEX_TIP: 8, MIDDLE_TIP: 12, RING_TIP: 16, PINKY_TIP: 20, WRIST: 0, THUMB_IP: 3, THUMB_MCP: 2, INDEX_MCP: 5, PINKY_MCP: 17 };
+1.  Modify `components/PracticeView.tsx`:
+    *   Use `useRef` for the detector instance: `const detectorRef = useRef<handPoseDetection.HandDetector | null>(null);`
+    *   Use `useRef` for the `requestAnimationFrame` ID: `const rafRef = useRef<number | null>(null);`
+    *   Add a `useEffect` hook to initialize the detector, dependent on `mlStatus`:
+        ```typescript
+        useEffect(() => {
+          if (mlStatus === 'ready') {
+            const initialize = async () => {
+              const model = handPoseDetection.SupportedModels.MediaPipeHands;
+              // ... detectorConfig ...
+              try {
+                 // ... await tf.setBackend / tf.ready ... (if needed)
+                 detectorRef.current = await handPoseDetection.createDetector(model, detectorConfig);
+                 console.log('Hand detector initialized.');
+                 // Trigger loop start maybe via another state/effect?
+              } catch (error) { /* handle error, set mlStatus to 'error' */ }
+            };
+            initialize();
+          }
+          // Cleanup function to dispose detector
+          return () => {
+             detectorRef.current?.dispose();
+             detectorRef.current = null;
+             console.log('Hand detector disposed.');
+          }
+        }, [mlStatus]); // Dependency: mlStatus
+        ```
+    *   Add *another* `useEffect` hook to manage the detection loop, dependent on the detector being ready and the video element being available/ready:
+        ```typescript
+        useEffect(() => {
+          const videoEl = videoRef.current;
+          const detector = detectorRef.current;
 
-        function isThumbsUp(hand) {
-            const landmarks = hand.keypoints;
-            if (!landmarks) return false;
-            const thumbTip = landmarks[Landmark.THUMB_TIP];
-            const indexMCP = landmarks[Landmark.INDEX_MCP];
-            const pinkyMCP = landmarks[Landmark.PINKY_MCP];
-            // Basic check: Thumb tip is above the knuckles of other fingers
-            return thumbTip.y < indexMCP.y && thumbTip.y < pinkyMCP.y; // Lower Y is higher on screen
-            // Add checks for finger curled state if needed
-        }
-
-        function isThumbsDown(hand) {
-            const landmarks = hand.keypoints;
-            if (!landmarks) return false;
-            // Basic check: Thumb tip is below the wrist (needs refinement)
-            // ... more robust checks needed ...
-            return false; // Placeholder - needs actual logic
-        }
-
-        function isFlatHand(hand) {
-            const landmarks = hand.keypoints;
-            if (!landmarks) return false;
-            // Basic check: All fingertips are roughly aligned and extended
-            // Check distances between fingertips and knuckles, angles etc.
-            // ... more robust checks needed ...
-            return false; // Placeholder - needs actual logic
-        }
-
-        export function classifyGesture(hands) {
-            let detectedGesture = 'none';
-            let gestureCount = 0;
-            for (const hand of hands) {
-                if (isThumbsUp(hand)) {
-                    if (detectedGesture === 'none') detectedGesture = 'easy';
-                    else if (detectedGesture !== 'easy') return 'ambiguous'; // Conflicting gestures
-                    gestureCount++;
-                } else if (isFlatHand(hand)) { // Placeholder
-                    if (detectedGesture === 'none') detectedGesture = 'hard';
-                    else if (detectedGesture !== 'hard') return 'ambiguous';
-                    gestureCount++;
-                } else if (isThumbsDown(hand)) { // Placeholder
-                     if (detectedGesture === 'none') detectedGesture = 'wrong';
-                    else if (detectedGesture !== 'wrong') return 'ambiguous';
-                    gestureCount++;
+          const detectHandsLoop = async () => {
+            if (detector && videoEl && videoEl.readyState >= 2) {
+              try {
+                const hands = await detector.estimateHands(videoEl, { /* options */ });
+                if (hands.length > 0) {
+                  // console.log('Detected hands:', hands); // Process gestures (next step)
+                  // *** Call gesture processing logic here ***
                 }
-                // Add checks for multiple hands showing the SAME gesture vs. different gestures
+              } catch (error) { /* handle error */ }
             }
-             if (gestureCount === 0) return 'none';
-             // If only one type of gesture was detected across potentially multiple hands:
-             if (detectedGesture !== 'none' && detectedGesture !== 'ambiguous') return detectedGesture;
-             // Handle case where multiple hands show *different* recognized gestures -> ambiguous
-             if (detectedGesture === 'ambiguous' || gestureCount > 1 && detectedGesture === 'none') return 'ambiguous'; // If multiple hands show different things, or non-recognized things
+            rafRef.current = requestAnimationFrame(detectHandsLoop); // Loop
+          };
 
-             return 'none'; // Default fallback
-        }
+          if (detector && videoEl) {
+            rafRef.current = requestAnimationFrame(detectHandsLoop); // Start loop
+            console.log('Detection loop started.');
+          }
+
+          // Cleanup: cancel animation frame
+          return () => {
+            if (rafRef.current) {
+              cancelAnimationFrame(rafRef.current);
+              console.log('Detection loop stopped.');
+            }
+          };
+        }, [detectorRef.current, videoRef.current]); // Dependencies: detector and video ref current values might need careful handling if refs update without re-render trigger, consider adding mlStatus or permissionStatus if needed
         ```
-    *   **Crucially:** Refine the placeholder logic for `isThumbsDown` and `isFlatHand` based on landmark geometry (e.g., finger extension angles, relative positions of thumb/fingertips/wrist).
-    *   The main `classifyGesture` function should handle the multi-hand logic from the spec (allow one type of gesture, return 'ambiguous' for conflicting types).
-2.  Create `gestureUtils.test.js`:
-    *   Import the classifier functions.
-    *   Create mock hand landmark data structures (`hands` array with `keypoints`) representing:
-        *   Clear Thumbs Up (one hand)
-        *   Clear Flat Hand (one hand) - *pending implementation*
-        *   Clear Thumbs Down (one hand) - *pending implementation*
-        *   No hands / neutral hand poses
-        *   Two hands showing Thumbs Up
-        *   One hand Thumbs Up, one hand neutral
-        *   One hand Thumbs Up, one hand Flat Hand (ambiguous)
-    *   Write unit tests calling `classifyGesture` with each mock data set and assert the returned string ('easy', 'hard', 'wrong', 'none', 'ambiguous').
+        *Note: Dependency arrays for effects using refs need care. Sometimes passing the ref object itself isn't enough if its `.current` property changes without a state change triggering re-render.*
+2.  Update test file for `PracticeView.tsx`:
+    *   Mock detector methods (`createDetector`, `estimateHands`, `dispose`). Mock `requestAnimationFrame`, `cancelAnimationFrame`.
+    *   Test detector initialization `useEffect` is triggered when `mlStatus` becomes `'ready'`. Assert `createDetector` called. Assert `dispose` called on unmount.
+    *   Test detection loop `useEffect` starts `rAF` when detector/video ready. Assert `estimateHands` called within `rAF` callback. Assert `cancelAnimationFrame` called on unmount.
 
-Provide the complete `gestureUtils.js` (with placeholders refined as much as possible or clearly marked) and `gestureUtils.test.js`.
+Provide the updated refs, `useEffect` hooks, and RTL test case descriptions.
 ````
 
 ---
 
-**Prompt 15: Gesture Hold Timer & Border Feedback**
+**Prompt 14 (React): Gesture Classification Logic & Tests**
 
-````text
-Objective: Implement the 3-second gesture hold requirement with visual feedback via the overlay border color filling up.
+```text
+Objective: Implement and test the pure gesture classification functions in TypeScript.
 
-Context: Building on Prompts 13 & 14. The detection loop gets landmarks, and `classifyGesture` identifies the gesture type. Now, add the timing logic.
+Context: Building on Prompt 13 (React). The detection loop will provide hand landmark data. This logic should be isolated.
 
 Requirements:
-1.  Modify `practice.js`:
-    *   Import `classifyGesture` from `gestureUtils.js`.
-    *   Add state variables outside the loop:
-        ```javascript
-        let currentGesture = 'none';
-        let gestureStartTime = null;
-        const GESTURE_HOLD_DURATION = 3000; // 3 seconds in ms
+1.  Create `frontend/src/utils/gestureUtils.ts`.
+2.  Define and export types/interfaces for Hand and Landmark data if not already available globally (e.g., `interface HandData { keypoints: Array<{x: number, y: number, z?: number, name?: string}> }`).
+3.  Implement and export classifier functions:
+    *   `isThumbsUp(hand: HandData): boolean`
+    *   `isFlatHand(hand: HandData): boolean`
+    *   `isThumbsDown(hand: HandData): boolean`
+    *   `classifyGesture(hands: HandData[]): 'easy' | 'hard' | 'wrong' | 'none' | 'ambiguous'` (implementing multi-hand logic from spec).
+    *   **Refine logic** based on landmark geometry. Use TypeScript type safety.
+4.  Create `frontend/src/utils/gestureUtils.test.ts`.
+5.  Write unit tests using Jest for `classifyGesture` with mock `HandData` covering all required cases. Use `describe` and `it`.
+
+Provide the complete `gestureUtils.ts` (with refined logic or clear placeholders) and `gestureUtils.test.ts`.
+```
+
+---
+
+**Prompt 15 (React): Gesture State Management & Border Feedback Hook**
+
+````text
+Objective: Manage gesture hold state (`currentGesture`, `gestureStartTime`) and visual feedback (border fill) using React state and effects.
+
+Context: Building on Prompts 13 (React) & 14. The detection loop runs. Integrate gesture classification and add timing/feedback logic using React state.
+
+Requirements:
+1.  Modify `components/PracticeView.tsx`:
+    *   Import `classifyGesture` from `utils/gestureUtils.ts`.
+    *   Add state variables:
+        ```typescript
+        const [currentGesture, setCurrentGesture] = useState<'easy' | 'hard' | 'wrong' | 'none' | 'ambiguous'>('none');
+        const [gestureStartTime, setGestureStartTime] = useState<number | null>(null);
+        const [borderStyle, setBorderStyle] = useState<React.CSSProperties>({ borderColor: 'transparent' }); // Or use classNames
+        const GESTURE_HOLD_DURATION = 3000;
         const gestureColors = { easy: 'green', hard: 'orange', wrong: 'red' };
         ```
-    *   Modify the `detectHandsLoop` function:
-        *   After getting `hands` from `detector.estimateHands`, call `const recognizedGesture = classifyGesture(hands);`.
-        *   Implement the state logic:
-            ```javascript
-            const now = Date.now();
-            const overlayElement = document.getElementById('gesture-overlay');
+    *   Modify the `detectHandsLoop` function (or the callback passed to the `useHandDetection` hook):
+        *   Inside the loop, after getting `hands`, call `const recognizedGesture = classifyGesture(hands);`.
+        *   Implement the state update logic based on `recognizedGesture` vs `currentGesture` (from Prompt 15 vanilla JS, adapted for `setState`). Use `Date.now()`.
+        *   Update `borderStyle` state based on hold progress:
+            *   Calculate `progress = (Date.now() - gestureStartTime) / GESTURE_HOLD_DURATION`.
+            *   Implement filling effect (e.g., update `borderImage` or use a CSS variable set via the style prop). Example using simple border color change + transition (needs CSS setup):
+              ```typescript
+               // Inside state update logic...
+               if (holding_same_gesture) {
+                   const holdTime = Date.now() - gestureStartTime;
+                   if (holdTime < GESTURE_HOLD_DURATION) {
+                       // Update border fill (e.g., with linear gradient or pseudo-element width)
+                       // Simple example: just set color
+                       setBorderStyle({ borderColor: gestureColors[currentGesture], transition: 'border-color 0.1s linear' });
+                   } else { /* handle completion - next step */ }
+               } else if (new_valid_gesture) {
+                   setBorderStyle({ borderColor: gestureColors[recognizedGesture], transition: 'none' }); // Start color immediately
+               } else { // none/ambiguous
+                   setBorderStyle({ borderColor: 'transparent', transition: 'border-color 0.2s linear' });
+               }
+              ```
+    *   Apply the `borderStyle` state to the `gesture-overlay` div's `style` prop in JSX: `<div id="gesture-overlay" style={borderStyle} ...>`.
+2.  Update test file for `PracticeView.tsx`:
+    *   Mock `classifyGesture`, `Date.now()`.
+    *   Test Case (Hold Start/Continue/Stop/Switch): Simulate `classifyGesture` returning different values over time (via mocked `rAF` callbacks). Assert internal state (`currentGesture`, `gestureStartTime`) updates correctly. Assert the `style` prop of the overlay div reflects the expected border color/style changes.
 
-            if (recognizedGesture !== 'none' && recognizedGesture !== 'ambiguous') {
-                if (recognizedGesture === currentGesture) {
-                    // Continue holding the same gesture
-                    const holdTime = now - gestureStartTime;
-                    if (holdTime >= GESTURE_HOLD_DURATION) {
-                        // Gesture held long enough! Trigger action (next step)
-                        console.log(`Gesture ${currentGesture} recognized!`);
-                        // Reset state for next gesture AFTER action/cooldown (next step)
-                        currentGesture = 'none';
-                        gestureStartTime = null;
-                        overlayElement.style.borderColor = 'transparent'; // Reset border immediately? Or after cooldown? Let's reset after cooldown.
-                        // *** TODO: Trigger Action & Cooldown ***
-                    } else {
-                        // Update border fill based on progress
-                        const progress = holdTime / GESTURE_HOLD_DURATION;
-                        const color = gestureColors[currentGesture];
-                        // Simple border color change - Needs refinement for "filling" effect
-                        overlayElement.style.borderColor = color;
-                        // TODO: Implement actual filling animation (e.g., using background gradient, pseudo-elements)
-                        console.log(`Holding ${currentGesture}: ${Math.round(progress * 100)}%`);
-                    }
-                } else {
-                    // Switched to a new valid gesture
-                    console.log(`Started gesture: ${recognizedGesture}`);
-                    currentGesture = recognizedGesture;
-                    gestureStartTime = now;
-                    // Reset border visually to start filling for new gesture
-                     overlayElement.style.borderColor = gestureColors[currentGesture]; // Show color immediately
-                    // TODO: Reset fill animation to 0%
-                }
-            } else {
-                // No gesture or ambiguous gesture detected
-                if (currentGesture !== 'none') {
-                    console.log('Gesture stopped/ambiguous.');
-                }
-                currentGesture = 'none';
-                gestureStartTime = null;
-                // Reset border
-                overlayElement.style.borderColor = 'transparent';
-                 // TODO: Reset fill animation to 0%
-            }
-            ```
-    *   **Border Fill Animation:** The `overlayElement.style.borderColor = color;` is a placeholder. Implement a visual "filling" effect. This could use:
-        *   CSS conic-gradient background on the overlay itself (complex?).
-        *   Animating the `border-image` property.
-        *   Using pseudo-elements (`::before` or `::after`) with `clip-path` or animated `width/height` on top of the border. Choose a method and implement it.
-2.  Update `practice.test.js`:
-    *   Mock `classifyGesture`, `Date.now()`, and `requestAnimationFrame`.
-    *   Test Case 1 (Hold Start): Simulate `classifyGesture` returning 'easy'. Assert `currentGesture` becomes 'easy', `gestureStartTime` is set. Assert border style changes to indicate start (e.g., green border visible).
-    *   Test Case 2 (Hold Continue): Simulate time passing (< 3s). Assert border style updates reflect progress (mock the animation update).
-    *   Test Case 3 (Hold Complete): Simulate time passing (>= 3s). Assert the "Gesture recognized!" log occurs and state resets (or prepares for action trigger).
-    *   Test Case 4 (Hold Interrupt): Simulate 'easy' -> 'none'. Assert state resets, border becomes transparent.
-    *   Test Case 5 (Hold Switch): Simulate 'easy' -> 'hard'. Assert `currentGesture` changes, `gestureStartTime` resets, border reflects 'hard'.
-
-Provide the updated `practice.js` (including the chosen border fill implementation) and `practice.test.js`.
+Provide the updated state variables, the modified detection loop logic integrating classification and state updates, the JSX change for applying `borderStyle`, and updated RTL test descriptions.
 ````
 
 ---
 
-**Prompt 16: Action Triggering, Feedback & Cooldown**
+**Prompt 16 (React): Action Triggering, Props & Cooldown Hook**
 
-````text
-Objective: Trigger the appropriate flashcard action upon successful gesture hold, provide brief solid border feedback, and implement the 1-second cooldown period.
+```text
+Objective: Trigger actions via component props upon successful gesture hold, provide brief solid border feedback, and implement the cooldown using React state and timeouts managed by effects.
 
-Context: Building on Prompt 15. The 3-second hold is detected. Now, link this to the actual flashcard logic ("Easy", "Hard", "Wrong") and add final feedback/cooldown. Assume there are existing JavaScript functions `handleEasy()`, `handleHard()`, `handleWrong()` that update the flashcard state and UI.
+Context: Building on Prompt 15 (React). Gesture hold state and border feedback are implemented. Now, connect to parent component logic via props and add cooldown.
 
 Requirements:
-1.  Modify `practice.js`:
-    *   Introduce a state variable for cooldown: `let isCooldownActive = false;`.
-    *   In `detectHandsLoop`, modify the section where `holdTime >= GESTURE_HOLD_DURATION`:
-        ```javascript
-        if (holdTime >= GESTURE_HOLD_DURATION && !isCooldownActive) {
-            const recognizedAction = currentGesture; // 'easy', 'hard', or 'wrong'
-            console.log(`Gesture ${recognizedAction} recognized! Triggering action.`);
+1.  Modify `components/PracticeView.tsx` (or the component handling gestures):
+    *   Define component props: `interface PracticeViewProps { /* other props */ onGestureRecognized: (action: 'easy' | 'hard' | 'wrong') => void; }` (Adjust component name and existing props). Ensure the parent component passes this prop.
+    *   Add state for cooldown: `const [isCooldownActive, setIsCooldownActive] = useState(false);`
+    *   Modify the gesture processing logic where `holdTime >= GESTURE_HOLD_DURATION`:
+        *   Check `!isCooldownActive`.
+        *   Call the prop function: `props.onGestureRecognized(currentGesture);`
+        *   Set visual feedback state: Maybe a temporary state `const [feedbackColor, setFeedbackColor] = useState<string | null>(null);`. Set `setFeedbackColor(gestureColors[currentGesture])`. Use `useEffect` or `setTimeout` to clear `feedbackColor` after 0.5s. The `borderStyle` should reflect this `feedbackColor` when active, overriding the fill effect.
+        *   Set `setIsCooldownActive(true)`.
+        *   Use `useEffect` or a `setTimeout` triggered here to set `setIsCooldownActive(false)` after 1 second. Ensure timeout cleanup (return function from `useEffect` or `clearTimeout` if storing ID).
+        *   Reset gesture state (`setCurrentGesture('none')`, `setGestureStartTime(null)`).
+    *   Modify the gesture processing logic: Add check `if (isCooldownActive) return;` at the beginning.
+2.  Update test file for `PracticeView.tsx`:
+    *   Create a mock prop function: `const onGestureRecognizedMock = jest.fn();` Render component with `<PracticeView onGestureRecognized={onGestureRecognizedMock} />`.
+    *   Mock timers (`jest.useFakeTimers`, `jest.advanceTimersByTime`).
+    *   Test Case (Hold Complete): Simulate gesture hold completion. Assert `onGestureRecognizedMock` is called with the correct action ('easy', etc.). Assert cooldown state becomes true. Assert feedback style applied. Advance timer by 0.5s, assert feedback style removed. Advance timer by 1s total, assert cooldown state becomes false.
+    *   Test Case (Cooldown Active): While cooldown state is true, simulate gesture detection. Assert `onGestureRecognizedMock` is *not* called again and state doesn't restart.
 
-            // --- Action Trigger ---
-            try {
-                if (recognizedAction === 'easy' && typeof handleEasy === 'function') {
-                    handleEasy();
-                } else if (recognizedAction === 'hard' && typeof handleHard === 'function') {
-                    handleHard();
-                } else if (recognizedAction === 'wrong' && typeof handleWrong === 'function') {
-                    handleWrong();
-                }
-            } catch (e) { console.error("Error triggering action:", e); }
-
-            // --- Visual Feedback ---
-            const color = gestureColors[recognizedAction];
-            overlayElement.style.borderColor = color; // Solid border
-            // TODO: Ensure any "fill" animation is removed/overridden for solid color
-            setTimeout(() => {
-                // Reset border after 0.5s, only if not overridden by new gesture detection
-                 if (!gestureStartTime) overlayElement.style.borderColor = 'transparent';
-            }, 500); // 0.5 second feedback
-
-            // --- Cooldown ---
-            isCooldownActive = true;
-            console.log('Cooldown started.');
-            setTimeout(() => {
-                console.log('Cooldown ended.');
-                isCooldownActive = false;
-            }, 1000); // 1 second cooldown
-
-            // --- Reset State ---
-            currentGesture = 'none';
-            gestureStartTime = null;
-            // Reset fill animation state here
-        }
-        ```
-    *   Modify the gesture detection logic slightly: Add `if (isCooldownActive) return;` at the beginning of the main logic block inside `detectHandsLoop` (after getting `recognizedGesture`) to pause processing during cooldown.
-2.  Update `practice.test.js`:
-    *   Mock the action functions `handleEasy`, `handleHard`, `handleWrong`.
-    *   Mock `setTimeout` and `clearTimeout`.
-    *   Refine Test Case 3 (Hold Complete):
-        *   Assert the correct action function (`handleEasy`, etc.) is called.
-        *   Assert the overlay border becomes solid with the correct color.
-        *   Assert `isCooldownActive` becomes true.
-        *   Use timer mocks (`jest.advanceTimersByTime`) to simulate 0.5s passing. Assert the border reset timeout logic runs (border becomes transparent).
-        *   Use timer mocks to simulate 1s passing. Assert `isCooldownActive` becomes false.
-    *   Add a test case during cooldown: Simulate gestures being detected. Assert that no new `gestureStartTime` is set and no actions are triggered while `isCooldownActive` is true.
-
-Provide the updated `practice.js` and `practice.test.js`. Assume `handleEasy`, `handleHard`, `handleWrong` exist globally or are properly imported/available in the scope.
-````
-
----
-
-These prompts cover the implementation steps for the gesture recognition feature based on the blueprint. The final step (4.1 in the blueprint) would involve manual end-to-end testing and potentially writing automated integration tests using tools like Cypress or Puppeteer, which are generally outside the scope of direct code generation prompts but are crucial for validation.
+Provide the updated component props definition, state variables, modified gesture completion logic (calling props, setting feedback/cooldown state), JSX potentially updated for feedback style, and updated RTL test descriptions.
+```
