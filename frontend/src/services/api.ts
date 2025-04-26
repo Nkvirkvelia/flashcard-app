@@ -1,13 +1,6 @@
 import axios from "axios";
-import {
-  PracticeSession,
-  UpdateRequest,
-  AnswerDifficulty,
-  ProgressStats,
-  Flashcard,
-} from "../types";
+import { Flashcard, PracticeSession, ProgressStats, AnswerDifficulty } from "../types";
 
-// Configure base URL for the backend API
 const API_BASE_URL = "http://localhost:3001/api";
 
 const apiClient = axios.create({
@@ -27,7 +20,7 @@ export const submitAnswer = async (
   cardBack: string,
   difficulty: AnswerDifficulty
 ): Promise<void> => {
-  const payload: UpdateRequest = { cardFront, cardBack, difficulty };
+  const payload = { cardFront, cardBack, difficulty };
   await apiClient.post("/update", payload);
 };
 
@@ -47,15 +40,18 @@ export const fetchProgress = async (): Promise<ProgressStats> => {
 };
 
 export const advanceDay = async (): Promise<{ currentDay: number }> => {
-  const response = await apiClient.post<{
-    message: string;
-    currentDay: number;
-  }>("/day/next");
+  const response = await apiClient.post<{ currentDay: number }>("/day/next");
   return response.data;
 };
 
-// New function to fetch all flashcards
+// Fetch all flashcards
 export const fetchAllFlashcards = async (): Promise<Flashcard[]> => {
   const response = await apiClient.get<Flashcard[]>("/cards");
+  return response.data;
+};
+
+// Fetch all unique tags
+export const fetchTags = async (): Promise<string[]> => {
+  const response = await apiClient.get<string[]>("/tags");
   return response.data;
 };

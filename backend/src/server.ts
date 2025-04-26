@@ -198,6 +198,24 @@ app.get("/api/cards", (req: Request, res: Response) => {
   }
 });
 
+app.get("/api/tags", (req: Request, res: Response) => {
+  try {
+    const buckets = state.getBuckets();
+    const allTags = new Set<string>();
+
+    for (const cardSet of buckets.values()) {
+      for (const card of cardSet) {
+        card.tags.forEach(tag => allTags.add(tag));
+      }
+    }
+
+    res.json(Array.from(allTags)); // Return tags as an array
+  } catch (error) {
+    console.error("Error fetching tags:", error);
+    res.status(500).json({ message: "Error fetching tags" });
+  }
+});
+
 // --- Start Server ---
 app.listen(PORT, () => {
   console.log(`Backend server running at http://localhost:${PORT}`);
