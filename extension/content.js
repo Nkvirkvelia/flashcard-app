@@ -97,7 +97,7 @@ function openModal(selectedText) {
   modal.style.transform = "translate(-50%, -50%)";
   modal.style.backgroundColor = "#fff";
   modal.style.padding = "20px";
-  modal.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.3)";
+  modal.style.boxShadow = "0 4px 10px  #000000";
   modal.style.borderRadius = "8px";
   modal.style.zIndex = "1001";
   modal.style.width = "400px";
@@ -108,7 +108,7 @@ function openModal(selectedText) {
 
   const frontInput = document.createElement("input");
   frontInput.type = "text";
-  frontInput.placeholder = "Enter the question (front)";
+  frontInput.placeholder = "Enter the front of the flashcard";
   frontInput.style.width = "100%";
 
   const backTextArea = document.createElement("textarea");
@@ -148,22 +148,24 @@ function openModal(selectedText) {
 
   const saveButton = document.createElement("button");
   saveButton.innerText = "Save";
+  saveButton.className = "save-button";
 
   const cancelButton = document.createElement("button");
   cancelButton.innerText = "Cancel";
+  cancelButton.className = "cancel-button";
 
   // Fetch tags from the backend and populate the dropdown
   fetch("http://localhost:3001/api/tags")
-    .then(response => response.json())
-    .then(tags => {
-      tags.forEach(tag => {
+    .then((response) => response.json())
+    .then((tags) => {
+      tags.forEach((tag) => {
         const option = document.createElement("option");
         option.value = tag;
         option.innerText = tag;
         tagsDropdown.appendChild(option);
       });
     })
-    .catch(error => console.error("Error fetching tags:", error));
+    .catch((error) => console.error("Error fetching tags:", error));
 
   modal.appendChild(title);
   modal.appendChild(frontInput);
