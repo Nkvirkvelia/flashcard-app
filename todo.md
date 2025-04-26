@@ -22,7 +22,7 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 - [x] **Test:** `it("returns 400 if required field 'front' is missing")`.
 - [x] **Test:** `it("returns 400 if required field 'back' is missing")`.
 - [x] **Test:** `it("handles optional field 'hint' correctly when missing")` - Verify 201 status and correct state/response.
-- [ ] **Test:** `it("handles optional field 'tags' correctly when missing")` - Verify 201 status and correct state/response.
+- [x] **Test:** `it("handles optional field 'tags' correctly when missing")` - Verify 201 status and correct state/response.
 - [ ] **Test:** `it("handles optional fields 'hint' and 'tags' correctly when both are present")` - Verify 201 status.
 - [ ] **Test:** `it("returns 201 status and correct success response body on success")` (Covered partially above, ensure explicit check).
 - [ ] **Test:** (Optional) `it("returns 500 on internal server error")` - If simulating errors in state management is feasible.

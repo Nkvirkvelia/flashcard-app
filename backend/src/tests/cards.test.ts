@@ -105,4 +105,20 @@ describe("POST /api/cards", () => {
     const cards = getAllFlashcards();
     expect(cards[0].hint).toBeUndefined();
   });
+
+  it("handles optional field 'tags' correctly when missing", async () => {
+    const newCard = {
+      front: "When did WW2 end?",
+      back: "1945",
+      hint: "Mid 20th century",
+    };
+
+    const res = await request(app).post("/api/cards").send(newCard);
+
+    expect(res.status).toBe(201);
+    expect(res.body.tags).toEqual([]);
+
+    const cards = getAllFlashcards();
+    expect(cards[0].tags).toEqual([]);
+  });
 });
