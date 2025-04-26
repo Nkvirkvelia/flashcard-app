@@ -16,7 +16,7 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 
 ## Phase 1: Backend API Verification (`POST /api/cards`)
 
-- [ ] **Test Suite Setup:** Configure Jest/Supertest for API testing, including mock setup/teardown for `state.ts`.
+- [x] **Test Suite Setup:** Configure Jest/Supertest for API testing, including mock setup/teardown for `state.ts`.
 - [ ] **Test:** `it("adds new card to state with correct fields (front, back, hint, tags)")` - Verify 201 status, response body, and state change.
 - [ ] **Test:** `it("adds new card to bucket 0")` - Verify specifically that the card lands in bucket 0 in the state.
 - [ ] **Test:** `it("returns 400 if required field 'front' is missing")`.
