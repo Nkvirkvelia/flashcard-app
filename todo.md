@@ -26,7 +26,7 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 - [x] **Test:** `it("handles optional fields 'hint' and 'tags' correctly when both are present")` - Verify 201 status.
 - [x] **Test:** `it("returns 201 status and correct success response body on success")` (Covered partially above, ensure explicit check).
 - [x] **Test:** (Optional) `it("returns 500 on internal server error")` - If simulating errors in state management is feasible.
-- [ ] **Run & Verify:** Ensure all backend API tests pass before proceeding.
+- [x] **Run & Verify:** Ensure all backend API tests pass before proceeding.
 
 ## Phase 2: Browser Extension Development
 
