@@ -63,147 +63,187 @@ function removeExistingButton() {
   }
 }
 
-// Function to send flashcard data to the backend
-async function saveFlashcardToBackend(front, back, hint, tags) {
-  try {
-    const response = await fetch("http://localhost:3001/api/cards", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ front, back, hint, tags }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to save flashcard: ${response.statusText}`);
-    }
-
-    alert("Flashcard saved successfully!");
-  } catch (error) {
-    console.error("Error saving flashcard to backend:", error);
-    alert("Failed to save flashcard. Please try again.");
-  }
-}
-
 // Function to open a modal
 function openModal(selectedText) {
   removeExistingModal();
 
-  const modal = document.createElement("div");
-  modal.className = "flashcard-modal";
-  modal.style.position = "fixed";
-  modal.style.left = "50%";
-  modal.style.top = "50%";
-  modal.style.transform = "translate(-50%, -50%)";
-  modal.style.backgroundColor = "#fff";
-  modal.style.padding = "20px";
-  modal.style.boxShadow = "0 4px 10px  #000000";
-  modal.style.borderRadius = "8px";
-  modal.style.zIndex = "1001";
-  modal.style.width = "400px";
-  modal.style.textAlign = "center";
+  // Create the modal overlay
+  const overlay = document.createElement("div");
+  overlay.id = "flashcard-modal-overlay";
+  overlay.className = "modal-overlay";
+  overlay.style.display = "none"; // Initially hidden
 
+  // Create the modal content container
+  const modal = document.createElement("div");
+  modal.id = "flashcard-modal-content";
+  modal.className = "flashcard-modal";
+
+  // Add the close button
+  const closeButton = document.createElement("span");
+  closeButton.id = "flashcard-modal-close";
+  closeButton.innerHTML = "&times;";
+  closeButton.className = "close-button";
+  closeButton.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+
+  // Add the modal title
   const title = document.createElement("h3");
   title.innerText = "Create Flashcard";
 
+  // Add the form
+  const form = document.createElement("form");
+
+  // Front input
+  const frontLabel = document.createElement("label");
+  frontLabel.innerText = "Front *";
+  frontLabel.htmlFor = "flashcard-front";
   const frontInput = document.createElement("input");
   frontInput.type = "text";
-  frontInput.placeholder = "Enter the front of the flashcard";
-  frontInput.style.width = "100%";
+  frontInput.id = "flashcard-front";
+  frontInput.placeholder = "Enter the front of the card";
+  frontInput.required = true;
 
+  // Back textarea
+  const backLabel = document.createElement("label");
+  backLabel.innerText = "Back";
+  backLabel.htmlFor = "flashcard-back";
   const backTextArea = document.createElement("textarea");
+  backTextArea.id = "flashcard-back";
   backTextArea.value = selectedText;
-  backTextArea.placeholder = "Highlighted text (back)";
-  backTextArea.style.width = "100%";
+  backTextArea.readOnly = true;
 
+  // Hint input
+  const hintLabel = document.createElement("label");
+  hintLabel.innerText = "Hint";
+  hintLabel.htmlFor = "flashcard-hint";
   const hintInput = document.createElement("input");
   hintInput.type = "text";
-  hintInput.placeholder = "Enter a hint";
-  hintInput.style.width = "100%";
+  hintInput.id = "flashcard-hint";
+  hintInput.placeholder = "Enter an optional hint";
 
-  const tagsDropdown = document.createElement("select");
-  tagsDropdown.style.width = "100%";
+  // Tags input
+  const tagsLabel = document.createElement("label");
+  tagsLabel.innerText = "Tags";
+  tagsLabel.htmlFor = "flashcard-tags";
+  const tagsInput = document.createElement("input");
+  tagsInput.type = "text";
+  tagsInput.id = "flashcard-tags";
+  tagsInput.placeholder = "Enter optional tags, comma-separated";
 
-  const addTagOption = document.createElement("option");
-  addTagOption.value = "add-new";
-  addTagOption.innerText = "Add New Tag";
-  tagsDropdown.appendChild(addTagOption);
+  // Message area
+  const messageArea = document.createElement("div");
+  messageArea.id = "flashcard-modal-message";
 
-  const newTagInput = document.createElement("input");
-  newTagInput.type = "text";
-  newTagInput.placeholder = "Enter new tag";
-  newTagInput.style.width = "100%";
-  newTagInput.style.marginTop = "10px";
-  newTagInput.style.display = "block"; // Initially hidden
+  // Save button
+  const saveButton = document.createElement("button");
+  saveButton.type = "submit";
+  saveButton.id = "flashcard-save";
+  saveButton.innerText = "Save";
 
-  // Event listener to toggle the input box
-  tagsDropdown.addEventListener("change", () => {
-    console.log("Dropdown value changed:", tagsDropdown.value); // Debugging
-    if (tagsDropdown.value === "add-new") {
-      newTagInput.style.display = "block";
-    } else {
-      newTagInput.style.display = "none";
-    }
+  // Clear button
+  const clearButton = document.createElement("button");
+  clearButton.type = "button";
+  clearButton.id = "flashcard-clear";
+  clearButton.innerText = "Clear";
+  clearButton.addEventListener("click", () => {
+    frontInput.value = "";
+    hintInput.value = "";
+    tagsInput.value = "";
+    messageArea.textContent = ""; // Clear any messages
   });
 
-  const saveButton = document.createElement("button");
-  saveButton.innerText = "Save";
-  saveButton.className = "save-button";
+  // Append elements to the form
+  form.appendChild(frontLabel);
+  form.appendChild(frontInput);
+  form.appendChild(backLabel);
+  form.appendChild(backTextArea);
+  form.appendChild(hintLabel);
+  form.appendChild(hintInput);
+  form.appendChild(tagsLabel);
+  form.appendChild(tagsInput);
+  form.appendChild(messageArea);
+  form.appendChild(saveButton);
+  form.appendChild(clearButton);
 
-  const cancelButton = document.createElement("button");
-  cancelButton.innerText = "Cancel";
-  cancelButton.className = "cancel-button";
+  // Add form submit event listener
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault(); // Prevent default form submission
 
-  // Fetch tags from the backend and populate the dropdown
-  fetch("http://localhost:3001/api/tags")
-    .then((response) => response.json())
-    .then((tags) => {
-      tags.forEach((tag) => {
-        const option = document.createElement("option");
-        option.value = tag;
-        option.innerText = tag;
-        tagsDropdown.appendChild(option);
-      });
-    })
-    .catch((error) => console.error("Error fetching tags:", error));
+    // Clear previous messages
+    messageArea.textContent = "";
+    messageArea.style.color = "red";
 
-  modal.appendChild(title);
-  modal.appendChild(frontInput);
-  modal.appendChild(backTextArea);
-  modal.appendChild(hintInput);
-  modal.appendChild(tagsDropdown);
-  modal.appendChild(newTagInput);
-  modal.appendChild(saveButton);
-  modal.appendChild(cancelButton);
-
-  document.body.appendChild(modal);
-
-  saveButton.addEventListener("click", () => {
-    const front = frontInput.value.trim();
-    const back = backTextArea.value.trim();
-    const hint = hintInput.value.trim();
-    const selectedTag = tagsDropdown.value;
-    const newTag = newTagInput.value.trim();
-    const tags = selectedTag === "add-new" && newTag ? [newTag] : [selectedTag];
-
-    if (!front) {
-      alert("The question (front) field cannot be empty.");
+    // Validate the front input
+    if (!frontInput.value.trim()) {
+      messageArea.textContent = "Front field is required.";
       return;
     }
 
-    saveFlashcardToBackend(front, back, hint, tags);
-    removeExistingModal();
+    // Construct the card data
+    const cardData = {
+      front: frontInput.value.trim(),
+      back: backTextArea.value.trim(),
+      hint: hintInput.value.trim() || undefined, // Omit if empty
+      tags: tagsInput.value
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag), // Process tags
+    };
+
+    try {
+      // Send the POST request to the backend
+      const response = await fetch("http://localhost:3001/api/cards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(cardData),
+      });
+
+      if (response.ok) {
+        messageArea.textContent = "Card saved successfully!";
+        messageArea.style.color = "green";
+
+        // Clear the form fields (except Back)
+        frontInput.value = "";
+        hintInput.value = "";
+        tagsInput.value = "";
+
+        // Optionally close the modal after a delay
+        setTimeout(() => {
+          overlay.style.display = "none";
+          messageArea.textContent = ""; // Clear the message
+        }, 1000);
+      } else {
+        const errorData = await response.json();
+        messageArea.textContent = errorData.message || "Error saving card.";
+      }
+    } catch (error) {
+      console.error("Error saving card:", error);
+      messageArea.textContent = "Network error. Unable to save card.";
+    }
   });
 
-  cancelButton.addEventListener("click", () => {
-    removeExistingModal();
-  });
+  // Append elements to the modal
+  modal.appendChild(closeButton);
+  modal.appendChild(title);
+  modal.appendChild(form);
+
+  // Append modal to the overlay
+  overlay.appendChild(modal);
+
+  // Append overlay to the document body
+  document.body.appendChild(overlay);
+
+  // Show the modal
+  overlay.style.display = "block";
 }
 
 // Function to remove the modal if it exists
 function removeExistingModal() {
-  const existingModal = document.querySelector(".flashcard-modal");
-  if (existingModal) {
-    existingModal.remove();
+  const existingOverlay = document.getElementById("flashcard-modal-overlay");
+  if (existingOverlay) {
+    existingOverlay.remove();
   }
 }
