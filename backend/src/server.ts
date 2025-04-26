@@ -181,6 +181,23 @@ app.post("/api/cards", (req: Request, res: Response) => {
   }
 });
 
+// GET /api/cards - Get all flashcards
+app.get("/api/cards", (req: Request, res: Response) => {
+  try {
+    const buckets = state.getBuckets();
+    const allCards: Flashcard[] = [];
+
+    for (const cardSet of buckets.values()) {
+      allCards.push(...Array.from(cardSet));
+    }
+
+    res.json(allCards);
+  } catch (error) {
+    console.error("Error fetching all flashcards:", error);
+    res.status(500).json({ message: "Error fetching flashcards" });
+  }
+});
+
 // --- Start Server ---
 app.listen(PORT, () => {
   console.log(`Backend server running at http://localhost:${PORT}`);

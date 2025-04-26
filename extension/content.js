@@ -72,6 +72,29 @@ function removeExistingButton() {
   }
 }
 
+// Function to send flashcard data to the backend
+async function saveFlashcardToBackend(front, back, hint, tags) {
+  try {
+    const response = await fetch("http://localhost:3001/api/cards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ front, back, hint, tags }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to save flashcard: ${response.statusText}`);
+    }
+
+    console.log("Flashcard saved successfully to the backend.");
+    alert("Flashcard saved successfully!");
+  } catch (error) {
+    console.error("Error saving flashcard to backend:", error);
+    alert("Failed to save flashcard. Please try again.");
+  }
+}
+
 // Function to open a modal
 function openModal(selectedText) {
   console.log("Opening modal with selected text:", selectedText);
@@ -170,8 +193,8 @@ function openModal(selectedText) {
       return;
     }
 
-    console.log("Flashcard saved:", { front, back, hint, tags });
-    alert(`Flashcard saved:\nFront: ${front}\nBack: ${back}\nHint: ${hint}\nTags: ${tags.join(", ")}`);
+    console.log("Saving flashcard:", { front, back, hint, tags });
+    saveFlashcardToBackend(front, back, hint, tags); // Save the flashcard to the backend
     removeExistingModal();
   });
 

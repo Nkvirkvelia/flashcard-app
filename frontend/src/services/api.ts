@@ -53,3 +53,9 @@ export const advanceDay = async (): Promise<{ currentDay: number }> => {
   }>("/day/next");
   return response.data;
 };
+
+// New function to fetch all flashcards
+export const fetchAllFlashcards = async (): Promise<Flashcard[]> => {
+  const response = await apiClient.get<Flashcard[]>("/cards");
+  return response.data;
+};
