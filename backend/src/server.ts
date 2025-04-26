@@ -216,12 +216,6 @@ app.get("/api/tags", (req: Request, res: Response) => {
   }
 });
 
-// --- Start Server ---
-app.listen(PORT, () => {
-  console.log(`Backend server running at http://localhost:${PORT}`);
-  console.log(`Current Day: ${state.getCurrentDay()}`);
-});
-
 export { app };
 
 // Only start the server if this file is run directly
