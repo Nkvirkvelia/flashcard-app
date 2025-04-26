@@ -140,4 +140,19 @@ describe("POST /api/cards", () => {
     expect(cards[0].hint).toBe(newCard.hint);
     expect(cards[0].tags).toEqual(newCard.tags);
   });
+
+  it("returns 201 status and correct success response body on success", async () => {
+    const newCard = {
+      front: "What is 2 + 2?",
+      back: "4",
+    };
+
+    const res = await request(app).post("/api/cards").send(newCard);
+
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty("id");
+    expect(res.body.front).toBe(newCard.front);
+    expect(res.body.back).toBe(newCard.back);
+    expect(res.body.bucket).toBe(0);
+  });
 });
