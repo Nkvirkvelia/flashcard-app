@@ -124,10 +124,27 @@ function openModal(selectedText) {
   const tagsDropdown = document.createElement("select");
   tagsDropdown.style.width = "100%";
 
-  const addTagInput = document.createElement("input");
-  addTagInput.type = "text";
-  addTagInput.placeholder = "Add a new tag (optional)";
-  addTagInput.style.width = "100%";
+  const addTagOption = document.createElement("option");
+  addTagOption.value = "add-new";
+  addTagOption.innerText = "Add New Tag";
+  tagsDropdown.appendChild(addTagOption);
+
+  const newTagInput = document.createElement("input");
+  newTagInput.type = "text";
+  newTagInput.placeholder = "Enter new tag";
+  newTagInput.style.width = "100%";
+  newTagInput.style.marginTop = "10px";
+  newTagInput.style.display = "block"; // Initially hidden
+
+  // Event listener to toggle the input box
+  tagsDropdown.addEventListener("change", () => {
+    console.log("Dropdown value changed:", tagsDropdown.value); // Debugging
+    if (tagsDropdown.value === "add-new") {
+      newTagInput.style.display = "block";
+    } else {
+      newTagInput.style.display = "none";
+    }
+  });
 
   const saveButton = document.createElement("button");
   saveButton.innerText = "Save";
@@ -135,6 +152,7 @@ function openModal(selectedText) {
   const cancelButton = document.createElement("button");
   cancelButton.innerText = "Cancel";
 
+  // Fetch tags from the backend and populate the dropdown
   fetch("http://localhost:3001/api/tags")
     .then(response => response.json())
     .then(tags => {
@@ -144,14 +162,15 @@ function openModal(selectedText) {
         option.innerText = tag;
         tagsDropdown.appendChild(option);
       });
-    });
+    })
+    .catch(error => console.error("Error fetching tags:", error));
 
   modal.appendChild(title);
   modal.appendChild(frontInput);
   modal.appendChild(backTextArea);
   modal.appendChild(hintInput);
   modal.appendChild(tagsDropdown);
-  modal.appendChild(addTagInput);
+  modal.appendChild(newTagInput);
   modal.appendChild(saveButton);
   modal.appendChild(cancelButton);
 
@@ -162,8 +181,8 @@ function openModal(selectedText) {
     const back = backTextArea.value.trim();
     const hint = hintInput.value.trim();
     const selectedTag = tagsDropdown.value;
-    const newTag = addTagInput.value.trim();
-    const tags = newTag ? [selectedTag, newTag] : [selectedTag];
+    const newTag = newTagInput.value.trim();
+    const tags = selectedTag === "add-new" && newTag ? [newTag] : [selectedTag];
 
     if (!front) {
       alert("The question (front) field cannot be empty.");
