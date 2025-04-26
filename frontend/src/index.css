@@ -66,3 +66,35 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Gesture recognition overlay styling */
+#gesture-overlay {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: 224px;
+  background-color: #cccccc;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden; /* Important for later border/video */
+  border: 3px solid transparent; /* For later color feedback */
+}
+
+#gesture-access-button {
+  cursor: pointer;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  color: #333333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+#gesture-access-button:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
