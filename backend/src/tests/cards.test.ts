@@ -67,4 +67,15 @@ describe("POST /api/cards", () => {
       true
     );
   });
+
+  it("returns 400 if required field 'front' is missing", async () => {
+    const invalidCard = {
+      back: "Something",
+    };
+
+    const res = await request(app).post("/api/cards").send(invalidCard);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
 });
