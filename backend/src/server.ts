@@ -154,6 +154,12 @@ app.post("/api/cards", (req: Request, res: Response) => {
     // Create new flashcard
     const newCard = new Flashcard(front, back, hint, tags || []);
 
+    // Create a new object with id
+    const cardWithId = {
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`, // simple unique id
+      ...newCard,
+    };
+
     // Get current buckets
     const currentBuckets = state.getBuckets();
 
@@ -173,7 +179,10 @@ app.post("/api/cards", (req: Request, res: Response) => {
     console.log(`Added new card: "${front}"`);
     res.status(201).json({
       message: "Card added successfully",
-      card: { front, back, hint, tags },
+      card: {
+        ...cardWithId,
+        bucket: 0, // New cards are always added to bucket 0
+      },
     });
   } catch (error) {
     console.error("Error adding card:", error);

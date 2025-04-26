@@ -1,7 +1,6 @@
 import request from "supertest";
 import { app } from "../server";
-import { getBuckets, setBuckets, findCard, findCardBucket } from "../state";
-import { Flashcard } from "../logic/flashcards";
+import { getBuckets, setBuckets } from "../state";
 
 describe("POST /api/cards", () => {
   beforeEach(() => {
@@ -36,11 +35,11 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(newCard);
 
     expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty("id");
-    expect(res.body.front).toBe(newCard.front);
-    expect(res.body.back).toBe(newCard.back);
-    expect(res.body.hint).toBe(newCard.hint);
-    expect(res.body.tags).toEqual(newCard.tags);
+    expect(res.body.card).toHaveProperty("id");
+    expect(res.body.card.front).toBe(newCard.front);
+    expect(res.body.card.back).toBe(newCard.back);
+    expect(res.body.card.hint).toBe(newCard.hint);
+    expect(res.body.card.tags).toEqual(newCard.tags);
 
     const cards = getAllFlashcards();
     expect(cards.length).toBe(1);
@@ -76,7 +75,7 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(invalidCard);
 
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("error");
+    expect(res.body).toHaveProperty("message");
   });
 
   it("returns 400 if required field 'back' is missing", async () => {
@@ -87,7 +86,7 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(invalidCard);
 
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("error");
+    expect(res.body).toHaveProperty("message");
   });
 
   it("handles optional field 'hint' correctly when missing", async () => {
@@ -100,7 +99,7 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(newCard);
 
     expect(res.status).toBe(201);
-    expect(res.body.hint).toBeUndefined();
+    expect(res.body.card.hint).toBeUndefined();
 
     const cards = getAllFlashcards();
     expect(cards[0].hint).toBeUndefined();
@@ -116,7 +115,7 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(newCard);
 
     expect(res.status).toBe(201);
-    expect(res.body.tags).toEqual([]);
+    expect(res.body.card.tags).toEqual([]);
 
     const cards = getAllFlashcards();
     expect(cards[0].tags).toEqual([]);
@@ -133,8 +132,8 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(newCard);
 
     expect(res.status).toBe(201);
-    expect(res.body.hint).toBe(newCard.hint);
-    expect(res.body.tags).toEqual(newCard.tags);
+    expect(res.body.card.hint).toBe(newCard.hint);
+    expect(res.body.card.tags).toEqual(newCard.tags);
 
     const cards = getAllFlashcards();
     expect(cards[0].hint).toBe(newCard.hint);
@@ -150,9 +149,30 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(newCard);
 
     expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty("id");
-    expect(res.body.front).toBe(newCard.front);
-    expect(res.body.back).toBe(newCard.back);
-    expect(res.body.bucket).toBe(0);
+    expect(res.body).toHaveProperty("card");
+    expect(res.body.card).toHaveProperty("id");
+    expect(res.body.card.front).toBe(newCard.front);
+    expect(res.body.card.back).toBe(newCard.back);
+    expect(res.body.card.bucket).toBe(0);
+  });
+
+  it("returns 500 on internal server error", async () => {
+    const originalSetBuckets = setBuckets;
+
+    (setBuckets as any) = jest.fn(() => {
+      throw new Error("Simulated failure");
+    });
+
+    const newCard = {
+      front: "Test error",
+      back: "Test",
+    };
+
+    const res = await request(app).post("/api/cards").send(newCard);
+
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("message");
+
+    (setBuckets as any) = originalSetBuckets;
   });
 });
