@@ -121,4 +121,23 @@ describe("POST /api/cards", () => {
     const cards = getAllFlashcards();
     expect(cards[0].tags).toEqual([]);
   });
+
+  it("handles optional fields 'hint' and 'tags' correctly when both are present", async () => {
+    const newCard = {
+      front: "Who wrote Hamlet?",
+      back: "Shakespeare",
+      hint: "Famous playwright",
+      tags: ["literature", "plays"],
+    };
+
+    const res = await request(app).post("/api/cards").send(newCard);
+
+    expect(res.status).toBe(201);
+    expect(res.body.hint).toBe(newCard.hint);
+    expect(res.body.tags).toEqual(newCard.tags);
+
+    const cards = getAllFlashcards();
+    expect(cards[0].hint).toBe(newCard.hint);
+    expect(cards[0].tags).toEqual(newCard.tags);
+  });
 });
