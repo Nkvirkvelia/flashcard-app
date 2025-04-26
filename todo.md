@@ -21,7 +21,7 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 - [x] **Test:** `it("adds new card to bucket 0")` - Verify specifically that the card lands in bucket 0 in the state.
 - [x] **Test:** `it("returns 400 if required field 'front' is missing")`.
 - [x] **Test:** `it("returns 400 if required field 'back' is missing")`.
-- [ ] **Test:** `it("handles optional field 'hint' correctly when missing")` - Verify 201 status and correct state/response.
+- [x] **Test:** `it("handles optional field 'hint' correctly when missing")` - Verify 201 status and correct state/response.
 - [ ] **Test:** `it("handles optional field 'tags' correctly when missing")` - Verify 201 status and correct state/response.
 - [ ] **Test:** `it("handles optional fields 'hint' and 'tags' correctly when both are present")` - Verify 201 status.
 - [ ] **Test:** `it("returns 201 status and correct success response body on success")` (Covered partially above, ensure explicit check).

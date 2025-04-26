@@ -89,4 +89,20 @@ describe("POST /api/cards", () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");
   });
+
+  it("handles optional field 'hint' correctly when missing", async () => {
+    const newCard = {
+      front: "What is H2O?",
+      back: "Water",
+      tags: ["science"],
+    };
+
+    const res = await request(app).post("/api/cards").send(newCard);
+
+    expect(res.status).toBe(201);
+    expect(res.body.hint).toBeUndefined();
+
+    const cards = getAllFlashcards();
+    expect(cards[0].hint).toBeUndefined();
+  });
 });
