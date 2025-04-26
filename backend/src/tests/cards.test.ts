@@ -49,4 +49,22 @@ describe("POST /api/cards", () => {
     expect(cards[0].hint).toBe(newCard.hint);
     expect(cards[0].tags).toEqual(newCard.tags);
   });
+
+  it("adds new card to bucket 0", async () => {
+    const newCard = {
+      front: "Define photosynthesis",
+      back: "Process by which plants make food",
+    };
+
+    const res = await request(app).post("/api/cards").send(newCard);
+
+    expect(res.status).toBe(201);
+
+    const buckets = getBuckets();
+    const bucket0 = buckets.get(0);
+    expect(bucket0).toBeDefined();
+    expect([...bucket0!].some((card) => card.front === newCard.front)).toBe(
+      true
+    );
+  });
 });
