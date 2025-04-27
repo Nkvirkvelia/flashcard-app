@@ -3,7 +3,7 @@ import "./WebcamOverlay.css";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import "@tensorflow/tfjs";
 
-const GestureOverlay: React.FC = () => {
+const WebcamOverlay: React.FC = () => {
   const [permissionStatus, setPermissionStatus] = useState<
     "pending" | "granted" | "denied"
   >("pending");
@@ -12,31 +12,43 @@ const GestureOverlay: React.FC = () => {
 
   const requestCameraAccess = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      setPermissionStatus("granted");
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        videoRef.current.onloadeddata = async () => {
-          // Video is ready to play
-          const detector = await handPoseDetection.createDetector(
-            handPoseDetection.SupportedModels.MediaPipeHands,
-            {
-              runtime: "mediapipe",
-              modelType: "full",
-              solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/hands",
-            }
-          );
-
-          detectorRef.current = detector;
-          startDetectionLoop();
-        };
-      }
+      await navigator.mediaDevices.getUserMedia({ video: true }); // Just trigger permission request
+      setPermissionStatus("granted"); // After grant, we'll set up stream inside useEffect
     } catch (error) {
       console.error("Camera access denied", error);
       setPermissionStatus("denied");
     }
   };
+
+  useEffect(() => {
+    if (permissionStatus === "granted" && videoRef.current) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+
+            videoRef.current.onloadeddata = async () => {
+              // Video feed ready — now load MediaPipe Hands
+              const detector = await handPoseDetection.createDetector(
+                handPoseDetection.SupportedModels.MediaPipeHands,
+                {
+                  runtime: "mediapipe",
+                  modelType: "full",
+                  solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/hands",
+                }
+              );
+              detectorRef.current = detector;
+              startDetectionLoop();
+            };
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to get video stream after permission.", error);
+          setPermissionStatus("denied");
+        });
+    }
+  }, [permissionStatus]);
 
   const startDetectionLoop = () => {
     const detect = async () => {
@@ -77,4 +89,4 @@ const GestureOverlay: React.FC = () => {
   );
 };
 
-export default GestureOverlay;
+export default WebcamOverlay;
