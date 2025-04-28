@@ -128,27 +128,27 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 
 ### 3.1: Basic Overlay UI Component & Styling
 
-- [ ] Modify `frontend/src/components/PracticeView.tsx` (or create a child component like `GestureOverlay.tsx`):
-  - [ ] Add state (`useState`) to manage visibility/activation of the gesture feature.
-  - [ ] Conditionally render a `div` element (`id="gesture-overlay"`, use `className` for styling) using JSX based on the state.
-  - [ ] Inside the overlay `div`, render a button (`id="gesture-access-button"`, use `className`) with initial text "Access Camera".
-- [ ] Modify `frontend/src/index.css` (or component-specific CSS/module):
-  - [ ] Add CSS rules for the overlay class (`.gesture-overlay-base`): positioning (fixed, bottom-right), dimensions, initial grey background, border-radius, flex centering, initial transparent border.
-  - [ ] Add CSS rules for the button class (`.gesture-button-base`): cursor, text style.
+- [x] Modify `frontend/src/components/PracticeView.tsx` (or create a child component like `GestureOverlay.tsx`):
+  - [x] Add state (`useState`) to manage visibility/activation of the gesture feature.
+  - [x] Conditionally render a `div` element (`id="gesture-overlay"`, use `className` for styling) using JSX based on the state.
+  - [x] Inside the overlay `div`, render a button (`id="gesture-access-button"`, use `className`) with initial text "Access Camera".
+- [x] Modify `frontend/src/index.css` (or component-specific CSS/module):
+  - [x] Add CSS rules for the overlay class (`.gesture-overlay-base`): positioning (fixed, bottom-right), dimensions, initial grey background, border-radius, flex centering, initial transparent border.
+  - [x] Add CSS rules for the button class (`.gesture-button-base`): cursor, text style.
 - [ ] Create/Update React Testing Library (RTL) test file for the component (`PracticeView.test.tsx` or `GestureOverlay.test.tsx`):
   - [ ] **Test:** Overlay and button render correctly when activation state is true.
   - [ ] **Test:** Overlay does not render (or renders differently) when activation state is false (if applicable).
 
 ### 3.2: Camera Access Logic & State
 
-- [ ] Modify the relevant React component (`PracticeView.tsx` or `GestureOverlay.tsx`):
-  - [ ] Add state (`useState`) for permission status (`'idle'`, `'pending'`, `'granted'`, `'denied'`).
-  - [ ] Add state (`useState`) for button text/label.
-  - [ ] Implement an `onClick` handler function (`handleAccessCameraClick`) for the "Access Camera" button.
-  - [ ] Inside the handler: Set permission state to `'pending'`, call `navigator.mediaDevices.getUserMedia({ video: true })`.
-  - [ ] Inside the `.then()` callback: Update permission state to `'granted'`, store the `stream` (potentially in state), update button text/visibility.
-  - [ ] Inside the `.catch()` callback: Update permission state to `'denied'`, update button text to "Permission Denied", log error.
-  - [ ] Update JSX to bind the `onClick` handler, display the button text from state, and potentially disable the button when pending.
+- [x] Modify the relevant React component (`PracticeView.tsx` or `GestureOverlay.tsx`):
+  - [x] Add state (`useState`) for permission status (`'idle'`, `'pending'`, `'granted'`, `'denied'`).
+  - [x] Add state (`useState`) for button text/label.
+  - [x] Implement an `onClick` handler function (`handleAccessCameraClick`) for the "Access Camera" button.
+  - [x] Inside the handler: Set permission state to `'pending'`, call `navigator.mediaDevices.getUserMedia({ video: true })`.
+  - [x] Inside the `.then()` callback: Update permission state to `'granted'`, store the `stream` (potentially in state), update button text/visibility.
+  - [x] Inside the `.catch()` callback: Update permission state to `'denied'`, update button text to "Permission Denied", log error.
+  - [x] Update JSX to bind the `onClick` handler, display the button text from state, and potentially disable the button when pending.
 - [ ] Update RTL test file:
   - [ ] Mock `navigator.mediaDevices.getUserMedia`.
   - [ ] **Test (Grant):** Simulate button click, mock `getUserMedia` resolving. Assert state updates and UI changes (e.g., button text/visibility).
@@ -159,8 +159,8 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 - [ ] Modify the relevant React component:
   - [ ] Add state (`useState`) to hold the `MediaStream` object (set in `getUserMedia` success).
   - [ ] Add state (`useState`) for ML library loading status (`'idle'`, `'loading'`, `'ready'`, `'error'`).
-  - [ ] Add `useRef` for the `<video>` element (`videoRef`).
-  - [ ] Conditionally render the `<video>` element in JSX when permission status is `'granted'`. Assign `videoRef` to its `ref` prop. Include `autoPlay`, `playsInline`, `muted` attributes and necessary styles (width, height, transform scaleX).
+  - [x] Add `useRef` for the `<video>` element (`videoRef`).
+  - [x] Conditionally render the `<video>` element in JSX when permission status is `'granted'`. Assign `videoRef` to its `ref` prop. Include `autoPlay`, `playsInline`, `muted` attributes and necessary styles (width, height, transform scaleX).
   - [ ] Add `useEffect` hook (dependent on `stream` state): Set `videoRef.current.srcObject = stream`. Include cleanup function to stop stream tracks.
   - [ ] Implement dynamic script loading logic (e.g., in a utility function or separate hook `useDynamicScript`).
   - [ ] Trigger dynamic script loading via `useEffect` when permission state is `'granted'`. Update ML loading status state accordingly.
