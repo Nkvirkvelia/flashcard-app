@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Flashcard, AnswerDifficulty } from "../types";
 import { fetchPracticeCards, submitAnswer, advanceDay } from "../services/api";
 import FlashcardDisplay from "./FlashcardDisplay";
+import WebcamOverlay from "./WebcamOverlay";
 
 const PracticeView: React.FC = () => {
   const [practiceCards, setPracticeCards] = useState<Flashcard[]>([]);
@@ -112,6 +113,8 @@ const PracticeView: React.FC = () => {
           </button>
         </div>
       )}
+
+      <WebcamOverlay />
     </div>
   );
 };

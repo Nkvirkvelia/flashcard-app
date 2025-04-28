@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "@vitejs/plugin-react": "^4.4.1"
+  },
+  "dependencies": {
+    "@tensorflow-models/hand-pose-detection": "^2.0.1",
+    "@tensorflow/tfjs": "^4.22.0"
   }
 }
