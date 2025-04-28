@@ -21,33 +21,35 @@ const WebcamOverlay: React.FC = () => {
   };
 
   useEffect(() => {
-    if (permissionStatus === "granted" && videoRef.current) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((stream) => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
+    let stream: MediaStream;
 
-            videoRef.current.onloadeddata = async () => {
-              // Video feed ready — now load MediaPipe Hands
-              const detector = await handPoseDetection.createDetector(
-                handPoseDetection.SupportedModels.MediaPipeHands,
-                {
-                  runtime: "mediapipe",
-                  modelType: "full",
-                  solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/hands",
-                }
-              );
-              detectorRef.current = detector;
-              startDetectionLoop();
-            };
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to get video stream after permission.", error);
-          setPermissionStatus("denied");
-        });
+    if (permissionStatus === "granted" && videoRef.current) {
+      navigator.mediaDevices.getUserMedia({ video: true }).then((s) => {
+        stream = s;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.onloadeddata = async () => {
+            // Video feed ready — now load MediaPipe Hands
+            const detector = await handPoseDetection.createDetector(
+              handPoseDetection.SupportedModels.MediaPipeHands,
+              {
+                runtime: "mediapipe",
+                modelType: "full",
+                solutionPath: "https://cdn.jsdelivr.net/npm/@mediapipe/hands",
+              }
+            );
+            detectorRef.current = detector;
+            startDetectionLoop();
+          };
+        }
+      });
     }
+
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
   }, [permissionStatus]);
 
   const startDetectionLoop = () => {
