@@ -98,7 +98,7 @@ const PracticeView: React.FC = () => {
       <FlashcardDisplay card={currentCard} showBack={showBack} />
 
       {!showBack ? (
-        <button onClick={handleShowBack}>Show Answer</button>
+        <button className="show-answer" onClick={handleShowBack}>Show Answer</button>
       ) : (
         <div>
           <p>How difficult was it?</p>
