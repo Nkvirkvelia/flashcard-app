@@ -4,6 +4,7 @@ import * as logic from "./logic/algorithm";
 import { Flashcard, AnswerDifficulty } from "./logic/flashcards";
 import * as state from "./state";
 import { UpdateRequest, ProgressStats, PracticeRecord } from "./types";
+const { processTags } = require("./utils/processTags");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -150,6 +151,15 @@ app.post("/api/cards", (req: Request, res: Response) => {
       res.status(400).json({ message: "Front and back are required" });
       return;
     }
+
+    // Validate tags field
+    if (tags && typeof tags !== "string" && !Array.isArray(tags)) {
+      res.status(400).json({ message: "Tags must be a string or an array" });
+      return;
+    }
+
+    // Process tags using processTags
+    const processedTags = processTags(tags);
 
     // Create new flashcard
     const newCard = new Flashcard(front, back, hint, tags || []);
