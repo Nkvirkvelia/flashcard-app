@@ -26,7 +26,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5); /* Background dimming */
   z-index: 1000;
   display: none; /* Hidden by default */
 }
@@ -96,12 +96,12 @@
   background-color: #0056b3;
 }
 
-#flashcard-cancel {
+#flashcard-clear {
   background-color: #f1f1f1;
   color: #333;
 }
 
-#flashcard-cancel:hover {
+#flashcard-clear:hover {
   background-color: #ddd;
 }
 
