@@ -4,6 +4,7 @@
   },
   "dependencies": {
     "@tensorflow-models/hand-pose-detection": "^2.0.1",
-    "@tensorflow/tfjs": "^4.22.0"
+    "@tensorflow/tfjs": "^4.22.0",
+    "supertest": "^7.1.0"
   }
 }
