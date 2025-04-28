@@ -16,17 +16,17 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 
 ## Phase 1: Backend API Verification (`POST /api/cards`)
 
-- [ ] **Test Suite Setup:** Configure Jest/Supertest for API testing, including mock setup/teardown for `state.ts`.
-- [ ] **Test:** `it("adds new card to state with correct fields (front, back, hint, tags)")` - Verify 201 status, response body, and state change.
-- [ ] **Test:** `it("adds new card to bucket 0")` - Verify specifically that the card lands in bucket 0 in the state.
-- [ ] **Test:** `it("returns 400 if required field 'front' is missing")`.
-- [ ] **Test:** `it("returns 400 if required field 'back' is missing")`.
-- [ ] **Test:** `it("handles optional field 'hint' correctly when missing")` - Verify 201 status and correct state/response.
-- [ ] **Test:** `it("handles optional field 'tags' correctly when missing")` - Verify 201 status and correct state/response.
-- [ ] **Test:** `it("handles optional fields 'hint' and 'tags' correctly when both are present")` - Verify 201 status.
-- [ ] **Test:** `it("returns 201 status and correct success response body on success")` (Covered partially above, ensure explicit check).
-- [ ] **Test:** (Optional) `it("returns 500 on internal server error")` - If simulating errors in state management is feasible.
-- [ ] **Run & Verify:** Ensure all backend API tests pass before proceeding.
+- [x] **Test Suite Setup:** Configure Jest/Supertest for API testing, including mock setup/teardown for `state.ts`.
+- [x] **Test:** `it("adds new card to state with correct fields (front, back, hint, tags)")` - Verify 201 status, response body, and state change.
+- [x] **Test:** `it("adds new card to bucket 0")` - Verify specifically that the card lands in bucket 0 in the state.
+- [x] **Test:** `it("returns 400 if required field 'front' is missing")`.
+- [x] **Test:** `it("returns 400 if required field 'back' is missing")`.
+- [x] **Test:** `it("handles optional field 'hint' correctly when missing")` - Verify 201 status and correct state/response.
+- [x] **Test:** `it("handles optional field 'tags' correctly when missing")` - Verify 201 status and correct state/response.
+- [x] **Test:** `it("handles optional fields 'hint' and 'tags' correctly when both are present")` - Verify 201 status.
+- [x] **Test:** `it("returns 201 status and correct success response body on success")` (Covered partially above, ensure explicit check).
+- [x] **Test:** (Optional) `it("returns 500 on internal server error")` - If simulating errors in state management is feasible.
+- [x] **Run & Verify:** Ensure all backend API tests pass before proceeding.
 
 ## Phase 2: Browser Extension Development
 

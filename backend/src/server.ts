@@ -154,6 +154,12 @@ app.post("/api/cards", (req: Request, res: Response) => {
     // Create new flashcard
     const newCard = new Flashcard(front, back, hint, tags || []);
 
+    // Create a new object with id
+    const cardWithId = {
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`, // simple unique id
+      ...newCard,
+    };
+
     // Get current buckets
     const currentBuckets = state.getBuckets();
 
@@ -173,7 +179,10 @@ app.post("/api/cards", (req: Request, res: Response) => {
     console.log(`Added new card: "${front}"`);
     res.status(201).json({
       message: "Card added successfully",
-      card: { front, back, hint, tags },
+      card: {
+        ...cardWithId,
+        bucket: 0, // New cards are always added to bucket 0
+      },
     });
   } catch (error) {
     console.error("Error adding card:", error);
@@ -205,7 +214,7 @@ app.get("/api/tags", (req: Request, res: Response) => {
 
     for (const cardSet of buckets.values()) {
       for (const card of cardSet) {
-        card.tags.forEach(tag => allTags.add(tag));
+        card.tags.forEach((tag) => allTags.add(tag));
       }
     }
 
@@ -216,8 +225,12 @@ app.get("/api/tags", (req: Request, res: Response) => {
   }
 });
 
-// --- Start Server ---
-app.listen(PORT, () => {
-  console.log(`Backend server running at http://localhost:${PORT}`);
-  console.log(`Current Day: ${state.getCurrentDay()}`);
-});
+export { app };
+
+// Only start the server if this file is run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Backend server running at http://localhost:${PORT}`);
+    console.log(`Current Day: ${state.getCurrentDay()}`);
+  });
+}
