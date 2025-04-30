@@ -20,10 +20,18 @@ export function isThumbsDown(hand: HandData): boolean {
   return thumbTip.y > wrist.y; // thumb is below wrist
 }
 
-export function isFlatHand(hand: HandData): boolean {
-  const fingers = [8, 12, 16, 20];
-  const baseY = hand.keypoints[0].y;
-  return fingers.every((idx) => Math.abs(hand.keypoints[idx].y - baseY) < 0.1);
+export function isPeaceSign(hand: HandData): boolean {
+  const tip = (i: number) => hand.keypoints[i].y;
+  const pip = (i: number) => hand.keypoints[i - 2].y; // one joint before tip
+
+  const isExtended = (tipIdx: number) => tip(tipIdx) < pip(tipIdx);
+
+  const indexUp = isExtended(8); // index finger
+  const middleUp = isExtended(12); // middle finger
+  const ringDown = tip(16) > pip(16);
+  const pinkyDown = tip(20) > pip(20);
+
+  return indexUp && middleUp && ringDown && pinkyDown;
 }
 
 export function classifyGesture(
@@ -36,7 +44,7 @@ export function classifyGesture(
   for (const hand of hands) {
     if (isThumbsUp(hand)) detected.add("easy");
     else if (isThumbsDown(hand)) detected.add("wrong");
-    else if (isFlatHand(hand)) detected.add("hard");
+    else if (isPeaceSign(hand)) detected.add("hard");
   }
 
   if (detected.size === 0) return "none";

@@ -140,20 +140,20 @@ This document outlines the requirements for enhancing an existing flashcard appl
 **3.3. Defined Gestures and Actions**
 
 - **Thumbs Up:** Recognized gesture corresponds to the **"Easy"** difficulty choice.
-- **Flat Hand:** Recognized gesture corresponds to the **"Hard"** difficulty choice. (_Developer Note: flat hand: palm facing camera, fingers extended and together._)
+- **Peace Sign:** Recognized gesture corresponds to the **"Hard"** difficulty choice.
 - **Thumbs Down:** Recognized gesture corresponds to the **"Wrong"** difficulty choice.
 
 **3.4. Gesture Detection Logic**
 
-- **Multi-Hand Handling:** The system should process landmarks for all hands detected in the frame. Recognition should proceed if **one and only one** type of the defined gestures (Thumbs Up, Flat Hand, or Thumbs Down) is consistently detected across all visible hands.
+- **Multi-Hand Handling:** The system should process landmarks for all hands detected in the frame. Recognition should proceed if **one and only one** type of the defined gestures (Thumbs Up, Peace Sign, or Thumbs Down) is consistently detected across all visible hands.
   - Example 1: One hand Thumbs Up, other hand neutral -> Recognize Thumbs Up.
   - Example 2: Two hands Thumbs Up -> Recognize Thumbs Up.
-  - Example 3: One hand Thumbs Up, one hand Flat Hand -> Ambiguous, reset any timers.
+  - Example 3: One hand Thumbs Up, one hand Peace Sign -> Ambiguous, reset any timers.
   - Example 4: No defined gestures detected -> Reset any timers.
 - **Hold Requirement:** A clearly recognized, non-ambiguous gesture must be held continuously for **3 seconds** to be accepted.
 - **Visual Feedback (During Hold):** As a valid gesture is being held, the border of the webcam overlay window should progressively fill with a color indicating the detected gesture:
   - Thumbs Up: **Green**
-  - Flat Hand: **Orange**
+  - Peace Sign: **Orange**
   - Thumbs Down: **Red**
 - **Hold Interruption:** If the gesture stops, changes, or becomes ambiguous (e.g., conflicting gestures) before the 3 seconds are complete, the border fill progress must reset immediately to empty.
 
@@ -170,11 +170,11 @@ This document outlines the requirements for enhancing an existing flashcard appl
 
 This table summarizes the valid hand gestures, their meanings, and the associated UI behavior in the flashcard practice view:
 
-| Gesture Icon | Hand Pose Description                                | Action Triggered | Border Fill Color |
-| ------------ | ---------------------------------------------------- | ---------------- | ----------------- |
-| 👍           | **Thumbs Up** — Thumb extended upward                | `Easy`           | 🟢 Green          |
-| ✋           | **Flat Hand** — Palm facing camera, fingers together | `Hard`           | 🟠 Orange         |
-| 👎           | **Thumbs Down** — Thumb extended downward            | `Wrong`          | 🔴 Red            |
+| Gesture Icon | Hand Pose Description                                  | Action Triggered | Border Fill Color |
+| ------------ | ------------------------------------------------------ | ---------------- | ----------------- |
+| 👍           | **Thumbs Up** — Thumb extended upward                  | `Easy`           | 🟢 Green          |
+| ✌️           | **Peace Sign** —fingers 2,3 extended, rest curled down | `Hard`           | 🟠 Orange         |
+| 👎           | **Thumbs Down** — Thumb extended downward              | `Wrong`          | 🔴 Red            |
 
 > ✅ **Note:** Gesture must be clearly detected and **held continuously for 3 seconds** to be accepted.  
 > ❌ If the gesture changes, becomes ambiguous, or is removed, the progress resets immediately.
@@ -237,7 +237,7 @@ _ Test UI state change upon permission grant (webcam feed visible).
 _ Test UI state change upon permission denial ("Permission Denied" text, button available).
 _ Verify TFJS/MediaPipe loads only _after_ permission grant.
 _ **Gesture Detection Logic (using mock data):**
-_ Test recognition of Thumbs Up, Flat Hand, Thumbs Down from mock landmarks.
+_ Test recognition of Thumbs Up, Peace Sign, Thumbs Down from mock landmarks.
 _ Test 3-second hold timer and corresponding border fill animation.
 _ Test timer/border reset on gesture change/stop before 3s.
 _ Test triggering of correct ("Easy"/"Hard"/"Wrong") action post-3s hold.

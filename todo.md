@@ -197,13 +197,13 @@
 - [x] Create `gestureUtils.ts` with:
 
   - `isThumbsUp(hand: HandData): boolean`
-  - `isFlatHand(hand: HandData): boolean`
+  - `isPeaceSign(hand: HandData): boolean`
   - `isThumbsDown(hand: HandData): boolean`
   - `classifyGesture(hands: HandData[]): 'easy' | 'hard' | 'wrong' | 'ambiguous' | 'none'`
 
 - [x] Create `gestureUtils.test.ts` with Jest unit tests:
   - [x] **Test:** One hand thumbs up → `'easy'`
-  - [x] **Test:** One hand flat hand → `'hard'`
+  - [x] **Test:** One hand peace sign → `'hard'`
   - [x] **Test:** One hand thumbs down → `'wrong'`
   - [x] **Test:** Two conflicting hands → `'ambiguous'`
   - [x] **Test:** No hands or undefined pose → `'none'`
@@ -218,7 +218,7 @@
 **Manual Test Tasks:**
 
 - [ ] Holding thumbs up for 3s → green fill border
-- [ ] Holding flat hand for 3s → orange border
+- [ ] Holding peace sign for 3s → orange border
 - [ ] Holding thumbs down → red border
 - [ ] Interrupting gesture before 3s resets fill
 
