@@ -163,32 +163,31 @@
 
 ### 3.3: Webcam Feed Display & TFJS/MediaPipe Loading Hook
 
-- [ ] Hold `MediaStream` in state
-- [ ] Use `useEffect` to assign `videoRef.current.srcObject = stream`
-- [ ] Stop tracks on cleanup
-- [ ] Dynamically load MediaPipe model after camera permission is granted
+- [x] Use `useEffect` to assign `videoRef.current.srcObject = stream`
+- [x] Stop tracks on cleanup
+- [x] Dynamically load MediaPipe model after camera permission is granted
 - [ ] Track ML model load state (`loading` → `ready`)
 
 **Manual Test Tasks:**
 
-- [ ] When Access is granted, webcam feed is visible
-- [ ] If denied, "Permission Denied" button is clickable
-- [ ] Model loads only after permission is granted (check devtools or console log)
+- [x] When Access is granted, webcam feed is visible
+- [x] If denied, "Permission Denied" button is clickable
+- [x] Model loads only after permission is granted (check devtools or console log)
 
 ---
 
 ### 3.4: Hand Detection Loop
 
-- [ ] Initialize detector via MediaPipe
-- [ ] Start detection loop using `requestAnimationFrame`
-- [ ] Call `estimateHands()` each frame
-- [ ] Clean up on unmount (cancel rAF, dispose detector)
+- [x] Initialize detector via MediaPipe. (createDetector() inside onloadeddata)
+- [x] Start detection loop using `requestAnimationFrame`(startDetectionLoop())
+- [x] Call `estimateHands()` each frame
+- [x] Clean up on unmount (cancel rAF, dispose detector)
 
 **Manual Test Tasks:**
 
-- [ ] Hands are detected and logged
-- [ ] Detection loop is active after model is ready
-- [ ] No memory leaks when unmounting or navigating away
+- [x] Hands are detected and logged
+- [x] Detection loop is active after model is ready
+- [x] No memory leaks when unmounting or navigating away
 
 ---
 
