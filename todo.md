@@ -194,19 +194,19 @@
 
 ### 3.5: Gesture Classification Logic (with Unit Tests)
 
-- [ ] Create `gestureUtils.ts` with:
+- [x] Create `gestureUtils.ts` with:
 
   - `isThumbsUp(hand: HandData): boolean`
   - `isFlatHand(hand: HandData): boolean`
   - `isThumbsDown(hand: HandData): boolean`
   - `classifyGesture(hands: HandData[]): 'easy' | 'hard' | 'wrong' | 'ambiguous' | 'none'`
 
-- [ ] Create `gestureUtils.test.ts` with Jest unit tests:
-  - [ ] **Test:** One hand thumbs up → `'easy'`
-  - [ ] **Test:** One hand flat hand → `'hard'`
-  - [ ] **Test:** One hand thumbs down → `'wrong'`
-  - [ ] **Test:** Two conflicting hands → `'ambiguous'`
-  - [ ] **Test:** No hands or undefined pose → `'none'`
+- [x] Create `gestureUtils.test.ts` with Jest unit tests:
+  - [x] **Test:** One hand thumbs up → `'easy'`
+  - [x] **Test:** One hand flat hand → `'hard'`
+  - [x] **Test:** One hand thumbs down → `'wrong'`
+  - [x] **Test:** Two conflicting hands → `'ambiguous'`
+  - [x] **Test:** No hands or undefined pose → `'none'`
 
 ### 3.6: Gesture State Management & Border Feedback
 
