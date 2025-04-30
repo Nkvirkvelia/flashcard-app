@@ -5,14 +5,14 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 
 ## Phase 0: Setup & Configuration
 
-- [ ] Verify Node.js and npm/yarn are installed.
-- [ ] Set up project structure (if not already existing).
-- [ ] Install necessary dependencies for backend testing (e.g., `jest`, `supertest`, `ts-jest`, `@types/jest`, `@types/supertest`).
-- [ ] Set up testing scripts in `package.json` for backend tests.
-- [ ] Ensure existing `Flashcard` class and `state.ts` (with `getBuckets`, `setBuckets`) are available for backend tests.
-- [ ] Set up testing environment for frontend/extension (e.g., Jest with JSDOM, or browser-specific tools).
-- [ ] Install necessary dependencies for frontend testing.
-- [ ] Install dependencies for gesture recognition (`@tensorflow/tfjs`, `@tensorflow-models/hand-pose-detection`, related `@types/` if using TypeScript).
+- [x] Verify Node.js and npm/yarn are installed.
+- [x] Set up project structure (if not already existing).
+- [x] Install necessary dependencies for backend testing (e.g., `jest`, `supertest`, `ts-jest`, `@types/jest`, `@types/supertest`).
+- [x] Set up testing scripts in `package.json` for backend tests.
+- [x] Ensure existing `Flashcard` class and `state.ts` (with `getBuckets`, `setBuckets`) are available for backend tests.
+- [x] Set up testing environment for frontend/extension (e.g., Jest with JSDOM, or browser-specific tools).
+- [x] Install necessary dependencies for frontend testing.
+- [x] Install dependencies for gesture recognition (`@tensorflow/tfjs`, `@tensorflow-models/hand-pose-detection`, related `@types/` if using TypeScript).
 
 ## Phase 1: Backend API Verification (`POST /api/cards`)
 
