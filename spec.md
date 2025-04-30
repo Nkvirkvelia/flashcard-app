@@ -140,7 +140,7 @@ This document outlines the requirements for enhancing an existing flashcard appl
 **3.3. Defined Gestures and Actions**
 
 - **Thumbs Up:** Recognized gesture corresponds to the **"Easy"** difficulty choice.
-- **Flat Hand:** Recognized gesture corresponds to the **"Hard"** difficulty choice. (_Developer Note: Clarify specific pose if needed - assume palm facing camera, fingers extended and together._)
+- **Flat Hand:** Recognized gesture corresponds to the **"Hard"** difficulty choice. (_Developer Note: flat hand: palm facing camera, fingers extended and together._)
 - **Thumbs Down:** Recognized gesture corresponds to the **"Wrong"** difficulty choice.
 
 **3.4. Gesture Detection Logic**
@@ -165,6 +165,19 @@ This document outlines the requirements for enhancing an existing flashcard appl
 - **Action Execution:** Simultaneously with the solid border feedback, the system programmatically triggers the corresponding difficulty action ("Easy", "Hard", or "Wrong"), effectively simulating a click on the respective button. This should advance the flashcard application to the next card state as usual.
 - **Cooldown Period:** Immediately after triggering the action, gesture recognition is paused for **1 second**. This prevents the previous gesture from being immediately re-detected for the new card.
 - **Resumption:** After the 1-second cooldown, gesture recognition resumes actively for the currently displayed flashcard.
+
+### Gesture to Action Mapping
+
+This table summarizes the valid hand gestures, their meanings, and the associated UI behavior in the flashcard practice view:
+
+| Gesture Icon | Hand Pose Description                                | Action Triggered | Border Fill Color |
+| ------------ | ---------------------------------------------------- | ---------------- | ----------------- |
+| 👍           | **Thumbs Up** — Thumb extended upward                | `Easy`           | 🟢 Green          |
+| ✋           | **Flat Hand** — Palm facing camera, fingers together | `Hard`           | 🟠 Orange         |
+| 👎           | **Thumbs Down** — Thumb extended downward            | `Wrong`          | 🔴 Red            |
+
+> ✅ **Note:** Gesture must be clearly detected and **held continuously for 3 seconds** to be accepted.  
+> ❌ If the gesture changes, becomes ambiguous, or is removed, the progress resets immediately.
 
 **3.6. Coexistence with Button Clicks**
 

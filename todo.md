@@ -1,6 +1,3 @@
-Okay, here is a detailed `todo.md` checklist based on the specification and the development blueprint. You can use this to track your progress.
-
-````markdown
 # Project TODO Checklist: Flashcard App Enhancements
 
 ## Phase 0: Setup & Configuration
@@ -166,83 +163,93 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 
 ### 3.3: Webcam Feed Display & TFJS/MediaPipe Loading Hook
 
-- [ ] Modify the relevant React component:
-  - [ ] Add state (`useState`) to hold the `MediaStream` object (set in `getUserMedia` success).
-  - [ ] Add state (`useState`) for ML library loading status (`'idle'`, `'loading'`, `'ready'`, `'error'`).
-  - [x] Add `useRef` for the `<video>` element (`videoRef`).
-  - [x] Conditionally render the `<video>` element in JSX when permission status is `'granted'`. Assign `videoRef` to its `ref` prop. Include `autoPlay`, `playsInline`, `muted` attributes and necessary styles (width, height, transform scaleX).
-  - [ ] Add `useEffect` hook (dependent on `stream` state): Set `videoRef.current.srcObject = stream`. Include cleanup function to stop stream tracks.
-  - [ ] Implement dynamic script loading logic (e.g., in a utility function or separate hook `useDynamicScript`).
-  - [ ] Trigger dynamic script loading via `useEffect` when permission state is `'granted'`. Update ML loading status state accordingly.
-- [ ] Update RTL test file:
-  - [ ] Mock `MediaStream`. Mock dynamic script loading.
-  * **Test:** Assert `<video>` element appears when permission is granted.
-  * **Test:** Assert `videoRef.current.srcObject` is set correctly (might require checking ref or mocking video element methods).
-  * **Test:** Assert ML loading functions are called only after permission grant.
-  * **Test:** Assert ML loading status state updates correctly.
+- [ ] Hold `MediaStream` in state
+- [ ] Use `useEffect` to assign `videoRef.current.srcObject = stream`
+- [ ] Stop tracks on cleanup
+- [ ] Dynamically load MediaPipe model after camera permission is granted
+- [ ] Track ML model load state (`loading` → `ready`)
 
-### 3.4: Hand Detection Hook & Loop Setup
+**Manual Test Tasks:**
 
-- [ ] Modify the relevant React component (or create a custom hook `useHandDetection`):
-  - [ ] Add `useRef` for the MediaPipe detector instance (`detectorRef`).
-  - [ ] Add `useRef` for the `requestAnimationFrame` ID (`rafRef`).
-  - [ ] Add `useEffect` hook (dependent on ML loading status `'ready'`): Initialize the detector (`handPoseDetection.createDetector`), store instance in `detectorRef.current`. Include cleanup to `dispose()` the detector. Handle initialization errors (update ML status state).
-  - [ ] Add `useEffect` hook (dependent on `detectorRef.current` and `videoRef.current` readiness):
-    - [ ] Define the `detectHandsLoop` async function inside the effect.
-    - [ ] Inside `detectHandsLoop`: Check detector/video readiness, call `detectorRef.current.estimateHands()`, handle results (call gesture classification - Step 3.5), handle errors.
-    - [ ] Inside `detectHandsLoop`: Recursively call `rafRef.current = requestAnimationFrame(detectHandsLoop)`.
-    - [ ] Start the loop initially: `rafRef.current = requestAnimationFrame(detectHandsLoop)`.
-    - [ ] Include cleanup function to `cancelAnimationFrame(rafRef.current)`.
-- [ ] Update RTL test file:
-  - [ ] Mock MediaPipe detector methods (`createDetector`, `estimateHands`, `dispose`). Mock `requestAnimationFrame`, `cancelAnimationFrame`.
-  - [ ] **Test:** Detector initialization effect runs correctly when ML status is ready. `dispose` is called on unmount.
-  - [ ] **Test:** Detection loop effect starts `rAF` when detector/video ready. `estimateHands` is called within `rAF` callback. `cancelAnimationFrame` is called on unmount.
+- [ ] When Access is granted, webcam feed is visible
+- [ ] If denied, "Permission Denied" button is clickable
+- [ ] Model loads only after permission is granted (check devtools or console log)
 
-### 3.5: Gesture Classification Logic & Tests
+---
 
-- [ ] Create `frontend/src/utils/gestureUtils.ts`.
-- [ ] Define necessary TypeScript interfaces/types for hand/landmark data.
-- [ ] Implement and export `isThumbsUp(hand: HandData): boolean`.
-- [ ] Implement and export `isFlatHand(hand: HandData): boolean`.
-- [ ] Implement and export `isThumbsDown(hand: HandData): boolean`.
-- [ ] Implement and export `classifyGesture(hands: HandData[]): 'easy' | 'hard' | 'wrong' | 'none' | 'ambiguous'` (including multi-hand logic).
-- [ ] Create `frontend/src/utils/gestureUtils.test.ts`.
-- [ ] Write comprehensive Jest unit tests for `classifyGesture` using mock landmark data for all specified cases.
+### 3.4: Hand Detection Loop
 
-### 3.6: Gesture State Management & Border Feedback Hook
+- [ ] Initialize detector via MediaPipe
+- [ ] Start detection loop using `requestAnimationFrame`
+- [ ] Call `estimateHands()` each frame
+- [ ] Clean up on unmount (cancel rAF, dispose detector)
 
-- [ ] Modify the relevant React component:
-  - [ ] Import `classifyGesture` from `gestureUtils.ts`.
-  - [ ] Add state (`useState`) for `currentGesture` (`'easy'`, `'hard'`, etc.).
-  - [ ] Add state (`useState`) for `gestureStartTime` (`number | null`).
-  - [ ] Add state (`useState`) for `borderStyle` (`React.CSSProperties`) or border class names. Define `gestureColors` map.
-  - [ ] Integrate `classifyGesture` call into the `detectHandsLoop` callback (from Step 3.4).
-  - [ ] Implement state update logic within the loop based on `classifyGesture` result vs. current state (using `setCurrentGesture`, `setGestureStartTime`).
-  - [ ] Update `borderStyle` state based on gesture hold progress (`(Date.now() - gestureStartTime) / GESTURE_HOLD_DURATION`) to implement the filling animation (e.g., using CSS variables, background gradients, or styled-component props). Reset style on gesture stop/change.
-  - [ ] Apply the `borderStyle` state (or class name) to the `#gesture-overlay` div's `style` (or `className`) prop in JSX.
-- [ ] Update RTL test file:
-  - [ ] Mock `classifyGesture`, `Date.now()`.
-  - [ ] **Test (Hold Start/Continue/Stop/Switch):** Simulate `classifyGesture` results over time via mocked `rAF` calls. Assert internal state updates correctly. Assert `style` or `className` prop of the overlay `div` reflects expected border feedback (start, progress, reset).
+**Manual Test Tasks:**
 
-### 3.7: Action Triggering, Props & Cooldown Hook
+- [ ] Hands are detected and logged
+- [ ] Detection loop is active after model is ready
+- [ ] No memory leaks when unmounting or navigating away
 
-- [ ] Modify the relevant React component (`PracticeView.tsx` or `GestureOverlay.tsx`):
-  - [ ] Define component props interface to include `onGestureRecognized: (action: 'easy' | 'hard' | 'wrong') => void;`. Ensure parent component passes this prop.
-  - [ ] Add state (`useState`) for `isCooldownActive` (`boolean`).
-  - [ ] Add state (`useState`) for temporary feedback style/class (`feedbackColor: string | null`).
-  - [ ] Modify gesture processing logic (where hold duration is met):
-    - [ ] Check `!isCooldownActive`.
-    - [ ] Call the `props.onGestureRecognized(currentGesture)` function.
-    - [ ] Set temporary feedback state (`setFeedbackColor`) to show solid border. Use `setTimeout` (managed within `useEffect` for cleanup) to clear this state after 0.5s.
-    - [ ] Set `setIsCooldownActive(true)`.
-    - [ ] Use `setTimeout` (managed within `useEffect` for cleanup) to set `setIsCooldownActive(false)` after 1s.
-    - [ ] Reset gesture state (`setCurrentGesture('none')`, `setGestureStartTime(null)`).
-  - [ ] Modify gesture processing logic: Add check `if (isCooldownActive) return;` at the beginning.
-  - [ ] Update JSX `style`/`className` binding for the overlay to prioritize `feedbackColor` over the progress fill when active.
-- [ ] Update RTL test file:
-  - [ ] Mock the `onGestureRecognized` prop function (`jest.fn()`). Mock timers (`jest.useFakeTimers`).
-  - [ ] **Test (Hold Complete):** Simulate gesture hold completion. Assert mock prop is called correctly. Assert cooldown state becomes true. Assert feedback style applied. Advance timer 0.5s, assert feedback style removed. Advance timer 1s, assert cooldown state becomes false.
-  - [ ] **Test (Cooldown Active):** While cooldown state is true, simulate gesture detection. Assert mock prop is _not_ called again.
+---
+
+### 3.5: Gesture Classification Logic (with Unit Tests)
+
+- [ ] Create `gestureUtils.ts` with:
+
+  - `isThumbsUp(hand: HandData): boolean`
+  - `isFlatHand(hand: HandData): boolean`
+  - `isThumbsDown(hand: HandData): boolean`
+  - `classifyGesture(hands: HandData[]): 'easy' | 'hard' | 'wrong' | 'ambiguous' | 'none'`
+
+- [ ] Create `gestureUtils.test.ts` with Jest unit tests:
+  - [ ] **Test:** One hand thumbs up → `'easy'`
+  - [ ] **Test:** One hand flat hand → `'hard'`
+  - [ ] **Test:** One hand thumbs down → `'wrong'`
+  - [ ] **Test:** Two conflicting hands → `'ambiguous'`
+  - [ ] **Test:** No hands or undefined pose → `'none'`
+
+### 3.6: Gesture State Management & Border Feedback
+
+- [ ] Manage current gesture and start time (`useState`)
+- [ ] If gesture held for 3 seconds, update border fill accordingly
+- [ ] Reset fill if gesture changes or becomes ambiguous
+- [ ] Apply dynamic styles or className for visual feedback
+
+**Manual Test Tasks:**
+
+- [ ] Holding thumbs up for 3s → green fill border
+- [ ] Holding flat hand for 3s → orange border
+- [ ] Holding thumbs down → red border
+- [ ] Interrupting gesture before 3s resets fill
+
+---
+
+### 3.7: Action Trigger & Cooldown
+
+- [ ] Trigger callback like `onGestureRecognized('easy' | 'hard' | 'wrong')`
+- [ ] Show solid border for 0.5s after triggering
+- [ ] Cooldown state for 1s after action
+- [ ] Resume gesture detection after cooldown
+- [ ] Reset gesture state (`setCurrentGesture('none')`, etc.)
+
+**Manual Test Tasks:**
+
+- [ ] Correct action triggers after full 3s hold
+- [ ] Solid border feedback shows for 0.5s
+- [ ] No double-activation from same gesture due to cooldown
+
+---
+
+### Final Integration
+
+- [ ] Add `onGestureRecognized` prop to `WebcamOverlay.tsx`
+- [ ] Pass `handleAnswer()` from `PracticeView.tsx` to `WebcamOverlay.tsx`
+- [ ] Gesture and buttons coexist and function independently
+
+**Manual Test Tasks:**
+
+- [ ] Can use either gesture or button for each card
+- [ ] UI doesn't freeze or duplicate actions
 
 ## Phase 4: Integration & Final Testing
 
@@ -258,4 +265,3 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
 ```
 
 ```
-````
