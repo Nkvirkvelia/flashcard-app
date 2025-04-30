@@ -23,15 +23,18 @@ function createThumbsUp(): Hand {
   };
 }
 
-function createFlatHand(): Hand {
+function createPeaceSign(): Hand {
   return {
     keypoints: Array(21)
       .fill(null)
-      .map((_, i) => ({
-        x: 0.1 * i,
-        y: 0.5,
-        z: 0,
-      })),
+      .map((_, i) => {
+        // index(8) and middle(12) tips higher than joints
+        if (i === 8 || i === 12) return { x: i * 0.05, y: 0.2, z: 0 };
+        if (i === 6 || i === 10) return { x: i * 0.05, y: 0.5, z: 0 }; // PIP
+        if (i === 16 || i === 20) return { x: i * 0.05, y: 0.6, z: 0 }; // ring/pinky tips
+        if (i === 14 || i === 18) return { x: i * 0.05, y: 0.4, z: 0 }; // ring/pinky PIP
+        return { x: i * 0.05, y: 0.5, z: 0 };
+      }),
   };
 }
 
@@ -48,7 +51,7 @@ function createThumbsDown(): Hand {
 }
 
 function createAmbiguous(): Hand[] {
-  return [createThumbsUp(), createFlatHand()];
+  return [createThumbsUp(), createPeaceSign()];
 }
 
 describe("classifyGesture", () => {
@@ -58,7 +61,7 @@ describe("classifyGesture", () => {
   });
 
   it("should return 'hard' for flat hand", () => {
-    const result = classifyGesture([createFlatHand()]);
+    const result = classifyGesture([createPeaceSign()]);
     expect(result).toBe("hard");
   });
 
