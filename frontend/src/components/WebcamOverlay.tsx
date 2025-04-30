@@ -71,7 +71,11 @@ const WebcamOverlay: React.FC = () => {
         const hands = await detectorRef.current.estimateHands(videoRef.current);
         const classified = classifyGesture(hands as HandData[]);
 
-        if (classified === gesture) {
+        if (
+          classified === gesture &&
+          gesture !== "none" &&
+          gesture !== "ambiguous"
+        ) {
           if (gestureStartTime) {
             const duration = Date.now() - gestureStartTime;
             const progress = Math.min(duration / GESTURE_HOLD_DURATION, 1);
@@ -100,10 +104,23 @@ const WebcamOverlay: React.FC = () => {
       gesture !== "none" && gesture !== "ambiguous"
         ? `4px solid ${gestureColors[gesture]}`
         : "4px solid transparent",
-    boxShadow: gestureStartTime
-      ? `0 0 0 ${borderProgress * 10}px ${gestureColors[gesture]}`
-      : undefined,
-    transition: "box-shadow 0.1s linear, border 0.1s linear",
+  };
+
+  //this is not working properly yet.
+  const progressBarStyle: React.CSSProperties = {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    width: "200%",
+    height: `${borderProgress * 100}%`,
+    backgroundColor:
+      gesture !== "none" && gesture !== "ambiguous"
+        ? gestureColors[gesture]
+        : "transparent",
+    opacity: 0.3,
+    transition: "height 0.1s linear",
+    zIndex: 9999,
+    pointerEvents: "none", // Ensure it doesn't interfere with clicks
   };
 
   return (
@@ -121,14 +138,17 @@ const WebcamOverlay: React.FC = () => {
       )}
 
       {permissionStatus === "granted" && (
-        <video
-          id="gesture-video"
-          autoPlay
-          playsInline
-          muted
-          ref={videoRef}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
+        <>
+          <video
+            id="gesture-video"
+            autoPlay
+            playsInline
+            muted
+            ref={videoRef}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+          <div style={progressBarStyle}></div>
+        </>
       )}
     </div>
   );
