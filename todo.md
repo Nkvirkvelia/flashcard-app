@@ -133,11 +133,15 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
   - [x] Conditionally render a `div` element (`id="gesture-overlay"`, use `className` for styling) using JSX based on the state.
   - [x] Inside the overlay `div`, render a button (`id="gesture-access-button"`, use `className`) with initial text "Access Camera".
 - [x] Modify `frontend/src/index.css` (or component-specific CSS/module):
+
   - [x] Add CSS rules for the overlay class (`.gesture-overlay-base`): positioning (fixed, bottom-right), dimensions, initial grey background, border-radius, flex centering, initial transparent border.
   - [x] Add CSS rules for the button class (`.gesture-button-base`): cursor, text style.
-- [ ] Create/Update React Testing Library (RTL) test file for the component (`PracticeView.test.tsx` or `GestureOverlay.test.tsx`):
-  - [ ] **Test:** Overlay and button render correctly when activation state is true.
-  - [ ] **Test:** Overlay does not render (or renders differently) when activation state is false (if applicable).
+
+- [x] Overlay UI Basics Manual Testing:
+  - [x] **Manual Test:** Overlay appears in the bottom-right corner with grey background.
+  - [x] **Manual Test:** "Access Camera" button is visible on initial render.
+  - [x] **Manual Test:** Overlay is responsive (resizes well).
+  - [x] **Manual Test:** Button has visual hover effect.
 
 ### 3.2: Camera Access Logic & State
 
@@ -149,10 +153,16 @@ Okay, here is a detailed `todo.md` checklist based on the specification and the 
   - [x] Inside the `.then()` callback: Update permission state to `'granted'`, store the `stream` (potentially in state), update button text/visibility.
   - [x] Inside the `.catch()` callback: Update permission state to `'denied'`, update button text to "Permission Denied", log error.
   - [x] Update JSX to bind the `onClick` handler, display the button text from state, and potentially disable the button when pending.
-- [ ] Update RTL test file:
-  - [ ] Mock `navigator.mediaDevices.getUserMedia`.
-  - [ ] **Test (Grant):** Simulate button click, mock `getUserMedia` resolving. Assert state updates and UI changes (e.g., button text/visibility).
-  - [ ] **Test (Deny):** Simulate button click, mock `getUserMedia` rejecting. Assert state updates and UI changes (e.g., button text becomes "Permission Denied").
+- [x] Camera Permission Flow Manual Testing
+
+  - [x] **Manual Test:** Clicking "Access Camera" triggers browser permission prompt.
+  - [x] **Manual Test:** If granted, webcam feed appears in the overlay.
+  - [x] **Manual Test:** If denied, overlay displays "Permission Denied - Retry" text/button.
+
+- [x] Retry Logic Manual Testing
+
+  - [x] **Manual Test:** Clicking the retry button after denial re-prompts (or shows retry UI).
+  - [x] **Manual Test:** Retry works without needing to reload the page.
 
 ### 3.3: Webcam Feed Display & TFJS/MediaPipe Loading Hook
 
