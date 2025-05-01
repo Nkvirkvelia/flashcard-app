@@ -1,5 +1,3 @@
-// frontend/src/components/PracticeView.tsx
-
 import React, { useState, useEffect } from "react";
 import { Flashcard, AnswerDifficulty } from "../types";
 import { fetchPracticeCards, submitAnswer, advanceDay } from "../services/api";
@@ -67,6 +65,22 @@ const PracticeView: React.FC = () => {
     }
   };
 
+  // Handle gesture recognition
+  const handleGestureRecognized = (gesture: "easy" | "hard" | "wrong") => {
+    // Only process gestures if we're showing the back of the card
+    if (!showBack) return;
+
+    // Map gestures to difficulty levels
+    const difficultyMap = {
+      easy: AnswerDifficulty.Easy,
+      hard: AnswerDifficulty.Hard,
+      wrong: AnswerDifficulty.Wrong,
+    };
+
+    // Trigger the appropriate answer
+    handleAnswer(difficultyMap[gesture]);
+  };
+
   // Render
   if (isLoading) {
     return <div>Loading practice cards...</div>;
@@ -98,7 +112,9 @@ const PracticeView: React.FC = () => {
       <FlashcardDisplay card={currentCard} showBack={showBack} />
 
       {!showBack ? (
-        <button className="show-answer" onClick={handleShowBack}>Show Answer</button>
+        <button className="show-answer" onClick={handleShowBack}>
+          Show Answer
+        </button>
       ) : (
         <div>
           <p>How difficult was it?</p>
@@ -114,7 +130,10 @@ const PracticeView: React.FC = () => {
         </div>
       )}
 
-      <WebcamOverlay />
+      <WebcamOverlay
+        onGestureRecognized={handleGestureRecognized}
+        active={showBack} // Only activate when the answer is showing
+      />
     </div>
   );
 };

@@ -163,32 +163,31 @@
 
 ### 3.3: Webcam Feed Display & TFJS/MediaPipe Loading Hook
 
-- [ ] Hold `MediaStream` in state
-- [ ] Use `useEffect` to assign `videoRef.current.srcObject = stream`
-- [ ] Stop tracks on cleanup
-- [ ] Dynamically load MediaPipe model after camera permission is granted
+- [x] Use `useEffect` to assign `videoRef.current.srcObject = stream`
+- [x] Stop tracks on cleanup
+- [x] Dynamically load MediaPipe model after camera permission is granted
 - [ ] Track ML model load state (`loading` → `ready`)
 
 **Manual Test Tasks:**
 
-- [ ] When Access is granted, webcam feed is visible
-- [ ] If denied, "Permission Denied" button is clickable
-- [ ] Model loads only after permission is granted (check devtools or console log)
+- [x] When Access is granted, webcam feed is visible
+- [x] If denied, "Permission Denied" button is clickable
+- [x] Model loads only after permission is granted (check devtools or console log)
 
 ---
 
 ### 3.4: Hand Detection Loop
 
-- [ ] Initialize detector via MediaPipe
-- [ ] Start detection loop using `requestAnimationFrame`
-- [ ] Call `estimateHands()` each frame
-- [ ] Clean up on unmount (cancel rAF, dispose detector)
+- [x] Initialize detector via MediaPipe. (createDetector() inside onloadeddata)
+- [x] Start detection loop using `requestAnimationFrame`(startDetectionLoop())
+- [x] Call `estimateHands()` each frame
+- [x] Clean up on unmount (cancel rAF, dispose detector)
 
 **Manual Test Tasks:**
 
-- [ ] Hands are detected and logged
-- [ ] Detection loop is active after model is ready
-- [ ] No memory leaks when unmounting or navigating away
+- [x] Hands are detected and logged
+- [x] Detection loop is active after model is ready
+- [x] No memory leaks when unmounting or navigating away
 
 ---
 
@@ -210,10 +209,9 @@
 
 ### 3.6: Gesture State Management & Border Feedback
 
-- [ ] Manage current gesture and start time (`useState`)
-- [ ] If gesture held for 3 seconds, update border fill accordingly
-- [ ] Reset fill if gesture changes or becomes ambiguous
-- [ ] Apply dynamic styles or className for visual feedback
+- [x] Manage current gesture and start time (`useState`)
+- [x] If gesture held for 3 seconds, recognize it
+- [x] Reset if gesture changes or becomes ambiguous
 
 **Manual Test Tasks:**
 
@@ -226,11 +224,11 @@
 
 ### 3.7: Action Trigger & Cooldown
 
-- [ ] Trigger callback like `onGestureRecognized('easy' | 'hard' | 'wrong')`
+- [x] Trigger callback like `onGestureRecognized('easy' | 'hard' | 'wrong')`
 - [ ] Show solid border for 0.5s after triggering
-- [ ] Cooldown state for 1s after action
-- [ ] Resume gesture detection after cooldown
-- [ ] Reset gesture state (`setCurrentGesture('none')`, etc.)
+- [x] Cooldown state for 1s after action
+- [x] Resume gesture detection after cooldown
+- [x] Reset gesture state
 
 **Manual Test Tasks:**
 
@@ -242,21 +240,21 @@
 
 ### Final Integration
 
-- [ ] Add `onGestureRecognized` prop to `WebcamOverlay.tsx`
-- [ ] Pass `handleAnswer()` from `PracticeView.tsx` to `WebcamOverlay.tsx`
-- [ ] Gesture and buttons coexist and function independently
+- [x] Add `onGestureRecognized` prop to `WebcamOverlay.tsx`
+- [x] Pass `handleAnswer()` from `PracticeView.tsx` to `WebcamOverlay.tsx`
+- [x] Gesture and buttons coexist and function independently
 
 **Manual Test Tasks:**
 
-- [ ] Can use either gesture or button for each card
-- [ ] UI doesn't freeze or duplicate actions
+- [x] Can use either gesture or button for each card
+- [x] UI doesn't freeze or duplicate actions
 
 ## Phase 4: Integration & Final Testing
 
-- [ ] **Manual Test (Extension):** Use extension on various websites. Select text, fill fields (incl. optional), save. Verify card appears correctly in backend/practice app (in Bucket 0). Test cancel/close. Test error handling (e.g., save without front).
+- [x] **Manual Test (Extension):** Use extension on various websites. Select text, fill fields (incl. optional), save. Verify card appears correctly in backend/practice app (in Bucket 0). Test cancel/close. Test error handling (e.g., save without front).
 - [ ] **Manual Test (Gestures):** Start practice session. Grant camera permission. Use Thumbs Up, Flat Hand, Thumbs Down gestures. Verify correct actions ("Easy", "Hard", "Wrong") are triggered and card state updates appropriately. Test hold timing and cooldown.
-- [ ] **Manual Test (Gestures - Robustness):** Test gestures under different lighting conditions, with different backgrounds, different hand sizes/shapes if possible.
-- [ ] **Manual Test (Coexistence):** Use both mouse clicks on buttons and hand gestures during a single practice session. Verify both input methods work correctly and don't interfere unexpectedly.
+- [x] **Manual Test (Gestures - Robustness):** Test gestures under different lighting conditions, with different backgrounds, different hand sizes/shapes if possible.
+- [x] **Manual Test (Coexistence):** Use both mouse clicks on buttons and hand gestures during a single practice session. Verify both input methods work correctly and don't interfere unexpectedly.
 - [ ] **Automated E2E Tests:** (Optional) Implement basic E2E tests using Puppeteer/Cypress for key scenarios if time permits.
 - [ ] **Code Review:** Review code for clarity, efficiency, adherence to spec, and best practices.
 - [ ] **Refactoring:** Refactor code based on review feedback and identified improvements.
