@@ -8,9 +8,14 @@ export function processTags(tagString: string | string[] | null | undefined): st
     return [];
   }
 
-  const tags = Array.isArray(tagString) ? tagString : tagString.split(",");
-  return tags
-    .map((tag) => tag.trim()) // Remove extra whitespace
-    .filter((tag) => tag.length > 0) // Remove empty tags
-    .filter((tag, index, self) => self.indexOf(tag) === index); // Remove duplicates
+  // If the input is already an array, return it as-is (after trimming each tag)
+  if (Array.isArray(tagString)) {
+    return tagString.map((tag) => tag.trim()).filter((tag) => tag.length > 0);
+  }
+
+  // If the input is a string, split it by commas and process it
+  return tagString
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0);
 }

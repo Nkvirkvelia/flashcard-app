@@ -23,13 +23,13 @@ const gestureColors: Record<string, string> = {
 };
 
 interface WebcamOverlayProps {
-  onGestureRecognized: (gesture: string) => void; // Callback for recognized gestures
-  active: boolean; // Whether the overlay is active
+  onGestureRecognized?: (gesture: "easy" | "hard" | "wrong") => void; // Callback for recognized gestures
+  active?: boolean; // Whether the overlay is active
 }
 
 const WebcamOverlay: React.FC<WebcamOverlayProps> = ({
   onGestureRecognized,
-  active, // Default to inactive
+  active = false, // Default to inactive
 }) => {
   const [permissionStatus, setPermissionStatus] = useState<
     "pending" | "granted" | "denied"
