@@ -209,10 +209,9 @@
 
 ### 3.6: Gesture State Management & Border Feedback
 
-- [ ] Manage current gesture and start time (`useState`)
-- [ ] If gesture held for 3 seconds, update border fill accordingly
-- [ ] Reset fill if gesture changes or becomes ambiguous
-- [ ] Apply dynamic styles or className for visual feedback
+- [x] Manage current gesture and start time (`useState`)
+- [x] If gesture held for 3 seconds, recognize it
+- [x] Reset if gesture changes or becomes ambiguous
 
 **Manual Test Tasks:**
 
@@ -225,11 +224,11 @@
 
 ### 3.7: Action Trigger & Cooldown
 
-- [ ] Trigger callback like `onGestureRecognized('easy' | 'hard' | 'wrong')`
+- [x] Trigger callback like `onGestureRecognized('easy' | 'hard' | 'wrong')`
 - [ ] Show solid border for 0.5s after triggering
-- [ ] Cooldown state for 1s after action
-- [ ] Resume gesture detection after cooldown
-- [ ] Reset gesture state (`setCurrentGesture('none')`, etc.)
+- [x] Cooldown state for 1s after action
+- [x] Resume gesture detection after cooldown
+- [x] Reset gesture state
 
 **Manual Test Tasks:**
 
@@ -241,21 +240,21 @@
 
 ### Final Integration
 
-- [ ] Add `onGestureRecognized` prop to `WebcamOverlay.tsx`
-- [ ] Pass `handleAnswer()` from `PracticeView.tsx` to `WebcamOverlay.tsx`
-- [ ] Gesture and buttons coexist and function independently
+- [x] Add `onGestureRecognized` prop to `WebcamOverlay.tsx`
+- [x] Pass `handleAnswer()` from `PracticeView.tsx` to `WebcamOverlay.tsx`
+- [x] Gesture and buttons coexist and function independently
 
 **Manual Test Tasks:**
 
-- [ ] Can use either gesture or button for each card
-- [ ] UI doesn't freeze or duplicate actions
+- [x] Can use either gesture or button for each card
+- [x] UI doesn't freeze or duplicate actions
 
 ## Phase 4: Integration & Final Testing
 
-- [ ] **Manual Test (Extension):** Use extension on various websites. Select text, fill fields (incl. optional), save. Verify card appears correctly in backend/practice app (in Bucket 0). Test cancel/close. Test error handling (e.g., save without front).
+- [x] **Manual Test (Extension):** Use extension on various websites. Select text, fill fields (incl. optional), save. Verify card appears correctly in backend/practice app (in Bucket 0). Test cancel/close. Test error handling (e.g., save without front).
 - [ ] **Manual Test (Gestures):** Start practice session. Grant camera permission. Use Thumbs Up, Flat Hand, Thumbs Down gestures. Verify correct actions ("Easy", "Hard", "Wrong") are triggered and card state updates appropriately. Test hold timing and cooldown.
-- [ ] **Manual Test (Gestures - Robustness):** Test gestures under different lighting conditions, with different backgrounds, different hand sizes/shapes if possible.
-- [ ] **Manual Test (Coexistence):** Use both mouse clicks on buttons and hand gestures during a single practice session. Verify both input methods work correctly and don't interfere unexpectedly.
+- [x] **Manual Test (Gestures - Robustness):** Test gestures under different lighting conditions, with different backgrounds, different hand sizes/shapes if possible.
+- [x] **Manual Test (Coexistence):** Use both mouse clicks on buttons and hand gestures during a single practice session. Verify both input methods work correctly and don't interfere unexpectedly.
 - [ ] **Automated E2E Tests:** (Optional) Implement basic E2E tests using Puppeteer/Cypress for key scenarios if time permits.
 - [ ] **Code Review:** Review code for clarity, efficiency, adherence to spec, and best practices.
 - [ ] **Refactoring:** Refactor code based on review feedback and identified improvements.
