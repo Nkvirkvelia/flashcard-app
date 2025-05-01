@@ -47,8 +47,8 @@
 - [x] Modify `content.js`: Set calculated `top`/`left` styles.
 - [x] Modify `content.js`: Append button to `document.body`.
 - [x] Set up Jest/JSDOM testing environment for `content.js`.
-- [ ] Create `content.test.js`.
-- [ ] **Test:** Assert button element exists in mock DOM after simulated selection & `mouseup`.
+- [x] Create `content.test.js`.
+- [x] **Test:** Assert button element exists in mock DOM after simulated selection & `mouseup`.
 - [x] **Test:** Assert button has `position: absolute`.
 - [x] **Test:** (Optional) Assert button `top`/`left` styles are approximately correct based on mock rect.
 
@@ -57,8 +57,8 @@
 - [x] Modify `content.js`: Add `mousedown` listener to `document`.
 - [x] Modify `content.js` (`mousedown` listener): Remove button if click target is not the button itself.
 - [x] Modify `content.js` (`mouseup` listener): Remove button if selection is empty (`window.getSelection().toString().trim() === ''`).
-- [ ] Update `content.test.js`: Test button removed after simulated click outside the button.
-- [ ] Update `content.test.js`: Test button removed after simulated selection clear & `mouseup`.
+- [x] Update `content.test.js`: Test button removed after simulated click outside the button.
+- [x] Update `content.test.js`: Test button removed after simulated selection clear & `mouseup`.
 
 ### 2.4: Modal HTML Structure & CSS
 
@@ -74,10 +74,10 @@
 - [x] Modify `content.js` (button listener): Get 'Back' textarea (`#flashcard-back`) and set its value to stored selected text.
 - [x] Modify `content.js` (button listener): Show the modal overlay (`display: block` or similar).
 - [x] Modify `content.js` (button listener): Add listeners (only once) to Cancel (`#flashcard-cancel`) and 'X' (`#flashcard-modal-close`) buttons to hide the overlay (`display: none`).
-- [ ] Update `content.test.js`: Test modal overlay becomes visible on floating button click.
-- [ ] Update `content.test.js`: Test 'Back' textarea value is correctly pre-filled.
-- [ ] Update `content.test.js`: Test modal overlay is hidden on Cancel button click.
-- [ ] Update `content.test.js`: Test modal overlay is hidden on 'X' button click.
+- [x] Update `content.test.js`: Test modal overlay becomes visible on floating button click.
+- [x] Update `content.test.js`: Test 'Back' textarea value is correctly pre-filled.
+- [x] Update `content.test.js`: Test modal overlay is hidden on Cancel button click.
+- [x] Update `content.test.js`: Test modal overlay is hidden on 'X' button click.
 
 ### 2.6: Tag Processing Logic & Tests
 
@@ -97,9 +97,9 @@
 - [x] Modify `content.js` (submit listener): Call `processTags` on Tags input value.
 - [x] Modify `content.js` (submit listener): Construct `cardData` object (use 'Back' field value, omit `hint`/`tags` keys if empty/no tags).
 - [x] Modify `content.js` (submit listener): Use `console.log` to mock API call with stringified `cardData`.
-- [ ] Update `content.test.js`: Test form submit calls `preventDefault`.
-- [ ] Update `content.test.js`: Test form submit triggers mock API log with correctly structured payload (check omitted optional fields).
-- [ ] Update `content.test.js`: Test 'Front' validation shows error message and prevents mock API call.
+- [x] Update `content.test.js`: Test form submit calls `preventDefault`.
+- [x] Update `content.test.js`: Test form submit triggers mock API log with correctly structured payload (check omitted optional fields).
+- [x] Update `content.test.js`: Test 'Front' validation shows error message and prevents mock API call.
 
 ### 2.8: API Integration & Feedback
 
@@ -116,10 +116,10 @@
   - [x] Display network error message in `#flashcard-modal-message` (red color).
   - [x] Ensure modal remains open.
 - [x] Modify `content.js` (submit listener): Ensure message area is cleared before displaying new message.
-- [ ] Update `content.test.js`: Mock global `fetch`.
-- [ ] Update `content.test.js`: Test success case (fetch resolves ok -> success message, timer started, modal hides after timer). Use mock timers.
-- [ ] Update `content.test.js`: Test client error case (fetch resolves !ok -> error message shown, modal remains open).
-- [ ] Update `content.test.js`: Test network error case (fetch rejects -> network error message shown, modal remains open).
+- [x] Update `content.test.js`: Mock global `fetch`.
+- [x] Update `content.test.js`: Test success case (fetch resolves ok -> success message, timer started, modal hides after timer). Use mock timers.
+- [x] Update `content.test.js`: Test client error case (fetch resolves !ok -> error message shown, modal remains open).
+- [x] Update `content.test.js`: Test network error case (fetch rejects -> network error message shown, modal remains open).
 
 ## Phase 3: Webcam Gesture Recognition Development
 
@@ -215,9 +215,9 @@
 
 **Manual Test Tasks:**
 
-- [ ] Holding thumbs up for 3s → green fill border
-- [ ] Holding peace sign for 3s → orange border
-- [ ] Holding thumbs down → red border
+- [x] Holding thumbs up for 3s → green fill border
+- [x] Holding peace sign for 3s → orange border
+- [x] Holding thumbs down → red border
 - [ ] Interrupting gesture before 3s resets fill
 
 ---
@@ -232,9 +232,9 @@
 
 **Manual Test Tasks:**
 
-- [ ] Correct action triggers after full 3s hold
-- [ ] Solid border feedback shows for 0.5s
-- [ ] No double-activation from same gesture due to cooldown
+- [x] Correct action triggers after full 3s hold
+- [x] Solid border feedback shows for 0.5s
+- [x] No double-activation from same gesture due to cooldown
 
 ---
 
@@ -252,7 +252,7 @@
 ## Phase 4: Integration & Final Testing
 
 - [x] **Manual Test (Extension):** Use extension on various websites. Select text, fill fields (incl. optional), save. Verify card appears correctly in backend/practice app (in Bucket 0). Test cancel/close. Test error handling (e.g., save without front).
-- [ ] **Manual Test (Gestures):** Start practice session. Grant camera permission. Use Thumbs Up, Flat Hand, Thumbs Down gestures. Verify correct actions ("Easy", "Hard", "Wrong") are triggered and card state updates appropriately. Test hold timing and cooldown.
+- [x] **Manual Test (Gestures):** Start practice session. Grant camera permission. Use Thumbs Up, Flat Hand, Thumbs Down gestures. Verify correct actions ("Easy", "Hard", "Wrong") are triggered and card state updates appropriately. Test hold timing and cooldown.
 - [x] **Manual Test (Gestures - Robustness):** Test gestures under different lighting conditions, with different backgrounds, different hand sizes/shapes if possible.
 - [x] **Manual Test (Coexistence):** Use both mouse clicks on buttons and hand gestures during a single practice session. Verify both input methods work correctly and don't interfere unexpectedly.
 - [ ] **Automated E2E Tests:** (Optional) Implement basic E2E tests using Puppeteer/Cypress for key scenarios if time permits.
