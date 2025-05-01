@@ -1,19 +1,40 @@
+/**
+ * @file cards.test.ts
+ * @description This file contains integration tests for the POST /api/cards endpoint of the flashcard web app.
+ *              The tests verify the creation and validation of flashcards, including optional and required fields.
+ *              It uses the Supertest library to simulate HTTP requests and interacts with a simple in-memory
+ *              flashcard state organized into "buckets".
+ *
+ * Technologies Used:
+ * - Supertest for API endpoint testing
+ * - Jest for test organization and assertions
+ *
+ * Assumptions:
+ * - Flashcards must have 'front' and 'back' fields.
+ * - 'hint' and 'tags' are optional.
+ * - All new cards are placed in bucket 0 by default.
+ *
+ */
+
 import request from "supertest";
 import { app } from "../server";
 import { getBuckets, setBuckets } from "../state";
 
 describe("POST /api/cards", () => {
   beforeEach(() => {
-    // Reset buckets to empty before each test
+    // Reset buckets to empty state before each test
     setBuckets(new Map([[0, new Set()]]));
   });
 
   afterEach(() => {
+    // Clean up after each test by resetting buckets
     setBuckets(new Map([[0, new Set()]]));
   });
 
+  /**
+   * Utility function to get all flashcards across all buckets.
+   */
   function getAllFlashcards(): any[] {
-    // Helper to get all flashcards from all buckets
     const buckets = getBuckets();
     const allCards: any[] = [];
     for (const cardSet of buckets.values()) {
@@ -34,7 +55,7 @@ describe("POST /api/cards", () => {
 
     const res = await request(app).post("/api/cards").send(newCard);
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(201); // Check for successful creation
     expect(res.body.card).toHaveProperty("id");
     expect(res.body.card.front).toBe(newCard.front);
     expect(res.body.card.back).toBe(newCard.back);
@@ -42,7 +63,7 @@ describe("POST /api/cards", () => {
     expect(res.body.card.tags).toEqual(newCard.tags);
 
     const cards = getAllFlashcards();
-    expect(cards.length).toBe(1);
+    expect(cards.length).toBe(1); // Ensure only one card was added
     expect(cards[0].front).toBe(newCard.front);
     expect(cards[0].back).toBe(newCard.back);
     expect(cards[0].hint).toBe(newCard.hint);
@@ -74,7 +95,7 @@ describe("POST /api/cards", () => {
 
     const res = await request(app).post("/api/cards").send(invalidCard);
 
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(400); // Validation should fail
     expect(res.body).toHaveProperty("message");
   });
 
@@ -99,7 +120,7 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(newCard);
 
     expect(res.status).toBe(201);
-    expect(res.body.card.hint).toBeUndefined();
+    expect(res.body.card.hint).toBeUndefined(); // Should not crash if hint is missing
 
     const cards = getAllFlashcards();
     expect(cards[0].hint).toBeUndefined();
@@ -115,7 +136,7 @@ describe("POST /api/cards", () => {
     const res = await request(app).post("/api/cards").send(newCard);
 
     expect(res.status).toBe(201);
-    expect(res.body.card.tags).toEqual([]);
+    expect(res.body.card.tags).toEqual([]); // Default value
 
     const cards = getAllFlashcards();
     expect(cards[0].tags).toEqual([]);
@@ -153,12 +174,13 @@ describe("POST /api/cards", () => {
     expect(res.body.card).toHaveProperty("id");
     expect(res.body.card.front).toBe(newCard.front);
     expect(res.body.card.back).toBe(newCard.back);
-    expect(res.body.card.bucket).toBe(0);
+    expect(res.body.card.bucket).toBe(0); // Default bucket
   });
 
   it("returns 500 on internal server error", async () => {
     const originalSetBuckets = setBuckets;
 
+    // Temporarily override setBuckets to simulate an error
     (setBuckets as any) = jest.fn(() => {
       throw new Error("Simulated failure");
     });
@@ -173,6 +195,7 @@ describe("POST /api/cards", () => {
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty("message");
 
+    // Restore original function
     (setBuckets as any) = originalSetBuckets;
   });
 });
