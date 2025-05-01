@@ -1,3 +1,9 @@
+/**
+ * Flashcard Backend Server
+ * -------------------------
+ * Provides API endpoints for managing flashcards, practicing, and tracking progress.
+ */
+
 import express, { Request, Response } from "express";
 import cors from "cors";
 import * as logic from "./logic/algorithm";
@@ -15,7 +21,10 @@ app.use(express.json());
 
 // --- API Routes ---
 
-// GET /api/practice - Get cards to practice for the current day
+/**
+ * GET /api/practice
+ * Fetches the flashcards to practice for the current day.
+ */
 app.get("/api/practice", (req: Request, res: Response) => {
   try {
     const day = state.getCurrentDay();
@@ -35,7 +44,10 @@ app.get("/api/practice", (req: Request, res: Response) => {
   }
 });
 
-// POST /api/update - Update a card's bucket after practice
+/**
+ * POST /api/update
+ * Updates the bucket of a flashcard based on the user's answer.
+ */
 app.post("/api/update", (req: Request, res: Response) => {
   try {
     const { cardFront, cardBack, difficulty } = req.body as UpdateRequest;
@@ -84,7 +96,10 @@ app.post("/api/update", (req: Request, res: Response) => {
   }
 });
 
-// GET /api/hint - Get a hint for a card
+/**
+ * GET /api/hint
+ * Fetches a hint for a specific flashcard.
+ */
 app.get("/api/hint", (req: Request, res: Response) => {
   try {
     const { cardFront, cardBack } = req.query;
@@ -112,7 +127,10 @@ app.get("/api/hint", (req: Request, res: Response) => {
   }
 });
 
-// GET /api/progress - Get learning progress statistics
+/**
+ * GET /api/progress
+ * Fetches the user's learning progress statistics.
+ */
 app.get("/api/progress", (req: Request, res: Response) => {
   try {
     const buckets = state.getBuckets();
@@ -128,7 +146,10 @@ app.get("/api/progress", (req: Request, res: Response) => {
   }
 });
 
-// POST /api/day/next - Advance the simulation day
+/**
+ * POST /api/day/next
+ * Advances the simulation to the next day.
+ */
 app.post("/api/day/next", (req: Request, res: Response) => {
   try {
     state.incrementDay(); // Increment the day in the backend state
@@ -141,7 +162,10 @@ app.post("/api/day/next", (req: Request, res: Response) => {
   }
 });
 
-// POST /api/cards - Add a new card from the extension
+/**
+ * POST /api/cards
+ * Adds a new flashcard to the system.
+ */
 app.post("/api/cards", (req: Request, res: Response) => {
   try {
     const { front, back, hint, tags } = req.body;
@@ -200,7 +224,10 @@ app.post("/api/cards", (req: Request, res: Response) => {
   }
 });
 
-// GET /api/cards - Get all flashcards
+/**
+ * GET /api/cards
+ * Fetches all flashcards in the system.
+ */
 app.get("/api/cards", (req: Request, res: Response) => {
   try {
     const buckets = state.getBuckets();
@@ -217,6 +244,10 @@ app.get("/api/cards", (req: Request, res: Response) => {
   }
 });
 
+/**
+ * GET /api/tags
+ * Fetches all unique tags from the flashcards.
+ */
 app.get("/api/tags", (req: Request, res: Response) => {
   try {
     const buckets = state.getBuckets();

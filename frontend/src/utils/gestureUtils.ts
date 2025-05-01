@@ -1,13 +1,24 @@
+/**
+ * Gesture Utilities
+ * -----------------
+ * Provides functions to classify hand gestures for flashcard interaction.
+ */
+
 export interface Landmark {
-  x: number;
-  y: number;
-  z: number;
+  x: number; // X-coordinate of the landmark
+  y: number; // Y-coordinate of the landmark
+  z: number; // Z-coordinate of the landmark (depth)
 }
 
 export interface HandData {
-  keypoints: Landmark[];
+  keypoints: Landmark[]; // Array of landmarks representing the hand
 }
 
+/**
+ * Determines if the hand gesture is a thumbs-up.
+ * @param hand - The hand data to analyze.
+ * @returns True if the gesture is a thumbs-up, false otherwise.
+ */
 export function isThumbsUp(hand: HandData): boolean {
   const thumbTip = hand.keypoints[4]; //Thumb tip
   const thumbMcp = hand.keypoints[1]; // Thumb base
@@ -42,6 +53,11 @@ export function isThumbsUp(hand: HandData): boolean {
   return thumbExtended && thumbIsHighest && fingersCurled;
 }
 
+/**
+ * Determines if the hand gesture is a thumbs-down.
+ * @param hand - The hand data to analyze.
+ * @returns True if the gesture is a thumbs-down, false otherwise.
+ */
 export function isThumbsDown(hand: HandData): boolean {
   const thumbTip = hand.keypoints[4];
   const thumbMcp = hand.keypoints[1]; // Thumb base
@@ -76,6 +92,11 @@ export function isThumbsDown(hand: HandData): boolean {
   return thumbExtended && thumbIsLowest && fingersCurled;
 }
 
+/**
+ * Determines if the hand gesture is a peace sign.
+ * @param hand - The hand data to analyze.
+ * @returns True if the gesture is a peace sign, false otherwise.
+ */
 export function isPeaceSign(hand: HandData): boolean {
   const indexTip = hand.keypoints[8]; // Index fingertip
   const indexPip = hand.keypoints[6]; // Index PIP joint
@@ -109,6 +130,11 @@ export function isPeaceSign(hand: HandData): boolean {
   );
 }
 
+/**
+ * Classifies the gesture based on hand data.
+ * @param hands - Array of hand data to classify.
+ * @returns The classified gesture ("easy", "hard", "wrong", "ambiguous", or "none").
+ */
 export function classifyGesture(
   hands: HandData[]
 ): "easy" | "hard" | "wrong" | "ambiguous" | "none" {

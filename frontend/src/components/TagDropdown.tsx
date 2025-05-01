@@ -1,33 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { fetchTags } from "../services/api";
+/**
+ * TagDropdown Component
+ * ----------------------
+ * This component provides a dropdown menu for selecting tags.
+ * It fetches available tags from the backend and allows the user to select one.
+ */
+
+import React, { useState, useEffect } from "react";
 
 const TagDropdown: React.FC = () => {
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]); // List of available tags
+  const [selectedTag, setSelectedTag] = useState<string | null>(null); // Currently selected tag
 
+  /**
+   * Fetches tags from the backend when the component mounts.
+   */
   useEffect(() => {
-    const loadTags = async () => {
+    const fetchTags = async () => {
       try {
-        const fetchedTags = await fetchTags();
-        setTags(fetchedTags);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
+        const response = await fetch("/api/tags");
+        const data = await response.json();
+        setTags(data);
+      } catch (err) {
+        console.error("Failed to fetch tags:", err);
       }
     };
 
-    loadTags();
+    fetchTags();
   }, []);
 
   return (
-    <div>
-      <h2>Available Tags</h2>
-      <select style={{ width: "200px", padding: "5px" }}>
-        {tags.map((tag, index) => (
-          <option key={index} value={tag}>
-            {tag}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select
+      value={selectedTag || ""}
+      onChange={(e) => setSelectedTag(e.target.value)}
+    >
+      <option value="" disabled>
+        Select a tag
+      </option>
+      {tags.map((tag) => (
+        <option key={tag} value={tag}>
+          {tag}
+        </option>
+      ))}
+    </select>
   );
 };
 
