@@ -1,3 +1,10 @@
+/**
+ * FlashcardList Component
+ * ------------------------
+ * Displays a list of flashcards. Each flashcard is rendered as a card
+ * with its front and back content.
+ */
+
 import React, { useEffect, useState } from "react";
 import { fetchAllFlashcards } from "../services/api";
 import { Flashcard } from "../types";

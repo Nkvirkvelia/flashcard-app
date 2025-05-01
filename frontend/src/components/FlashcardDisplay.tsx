@@ -1,10 +1,17 @@
+/**
+ * FlashcardDisplay Component
+ * ---------------------------
+ * Displays the front and back of a flashcard. Allows the user to request a hint
+ * for the current flashcard.
+ */
+
 import React, { useState, useEffect } from "react";
 import { Flashcard } from "../types";
 import { fetchHint } from "../services/api";
 
 interface FlashcardDisplayProps {
-  card?: Flashcard; // Made optional to avoid runtime crash
-  showBack: boolean;
+  card?: Flashcard; // The flashcard to display
+  showBack: boolean; // Whether to show the back of the card
 }
 
 const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
@@ -22,13 +29,16 @@ const FlashcardDisplay: React.FC<FlashcardDisplayProps> = ({
     setLoadingHint(false);
   }, [card]);
 
+  /**
+   * Fetches a hint for the current flashcard.
+   */
   const handleGetHint = async () => {
     setLoadingHint(true);
     setHintError(null);
     setHint(null);
 
     try {
-      const fetchedHint = await fetchHint(card!); // `card` is guaranteed to exist here
+      const fetchedHint = await fetchHint(card!);
       setHint(fetchedHint);
     } catch (error) {
       setHintError("Failed to load hint. Please try again.");

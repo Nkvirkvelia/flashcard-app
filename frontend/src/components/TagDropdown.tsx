@@ -1,3 +1,10 @@
+/**
+ * TagDropdown Component
+ * ----------------------
+ * This component provides a dropdown menu for selecting tags.
+ * It fetches available tags from the backend and allows the user to select one.
+ */
+
 import React, { useEffect, useState } from "react";
 import { fetchTags } from "../services/api";
 

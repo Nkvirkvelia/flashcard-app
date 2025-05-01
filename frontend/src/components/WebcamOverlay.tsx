@@ -1,12 +1,20 @@
+/**
+ * WebcamOverlay Component
+ * ------------------------
+ * This component provides a webcam overlay for gesture recognition.
+ * It uses a gesture recognition library to detect user gestures and trigger
+ * corresponding actions in the flashcard practice session.
+ */
+
 import React, { useState, useRef, useEffect } from "react";
 import "./WebcamOverlay.css";
 import * as handPoseDetection from "@tensorflow-models/hand-pose-detection";
 import "@tensorflow/tfjs";
 import { classifyGesture, HandData } from "../utils/gestureUtils";
 
-const GESTURE_HOLD_DURATION = 3000; // 3 seconds
-const ACTION_FEEDBACK_DURATION = 500; // 0.5 seconds
-const COOLDOWN_DURATION = 1000; // 1 second
+const GESTURE_HOLD_DURATION = 3000; // Time (ms) to hold a gesture for recognition
+const ACTION_FEEDBACK_DURATION = 500; // Time (ms) to display feedback after a gesture
+const COOLDOWN_DURATION = 1000; // Time (ms) before another gesture can be recognized
 
 const gestureColors: Record<string, string> = {
   easy: "green",
@@ -15,8 +23,8 @@ const gestureColors: Record<string, string> = {
 };
 
 interface WebcamOverlayProps {
-  onGestureRecognized?: (gesture: "easy" | "hard" | "wrong") => void;
-  active?: boolean; // Controls when detection is active
+  onGestureRecognized?: (gesture: "easy" | "hard" | "wrong") => void; // Callback for recognized gestures
+  active?: boolean; // Whether the overlay is active
 }
 
 const WebcamOverlay: React.FC<WebcamOverlayProps> = ({

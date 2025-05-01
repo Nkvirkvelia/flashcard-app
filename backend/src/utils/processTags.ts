@@ -1,3 +1,8 @@
+/**
+ * Processes a tag string or array into a normalized array of tags.
+ * @param tagString - A string or array of tags to process.
+ * @returns An array of unique, trimmed tags.
+ */
 export function processTags(tagString: string | string[] | null | undefined): string[] {
   if (!tagString) {
     return [];
